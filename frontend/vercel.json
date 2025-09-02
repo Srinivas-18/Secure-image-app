@@ -11,8 +11,16 @@
   ],
   "routes": [
     {
+      "src": "/",
+      "dest": "/templates/index.html"
+    },
+    {
+      "src": "/logs",
+      "dest": "/templates/logs.html"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/templates/index.html"
     }
   ]
 }
