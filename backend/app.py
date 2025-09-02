@@ -22,7 +22,12 @@ app = Flask(__name__,
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-change-this')
 
 # Enable CORS for cross-origin requests (Vercel → Render)
-CORS(app, origins=["http://localhost:3000", "https://*.vercel.app"])
+CORS(app, origins=[
+    "http://localhost:3000", 
+    "http://localhost:5000",
+    "https://*.vercel.app",
+    "https://secure-image-app.vercel.app"
+])
 
 # Configuration
 UPLOAD_FOLDER = 'backend/uploads'
