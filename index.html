@@ -203,6 +203,50 @@
             border: 1px solid #f5c6cb;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+            top: 10px;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .log-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
         .btn-google {
             background: #4285f4;
             color: white;
@@ -551,6 +595,41 @@
                     document.getElementById('registerSection').style.display = 'none';
                     document.getElementById('loginSection').style.display = 'block';
                 });
+
+                // View Logs button
+                document.getElementById('viewLogsBtn')?.addEventListener('click', () => {
+                    document.getElementById('logModal').style.display = 'block';
+                });
+
+                // Modal close buttons
+                document.querySelectorAll('.close').forEach(closeBtn => {
+                    closeBtn.addEventListener('click', (e) => {
+                        e.target.closest('.modal').style.display = 'none';
+                    });
+                });
+
+                // Close modal when clicking outside
+                window.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal')) {
+                        e.target.style.display = 'none';
+                    }
+                });
+
+                // Log authentication form
+                document.getElementById('logAuthForm')?.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const username = document.getElementById('logUsername').value;
+                    const password = document.getElementById('logPassword').value;
+                    
+                    // Simple authentication check (in production, use proper authentication)
+                    if (username === 'admin' && password === 'admin123') {
+                        document.getElementById('logModal').style.display = 'none';
+                        document.getElementById('logDisplayModal').style.display = 'block';
+                        this.loadActivityLogs();
+                    } else {
+                        this.showMessage('❌ Invalid credentials for log access', 'error');
+                    }
+                });
             }
 
             updateUI() {
@@ -579,15 +658,40 @@
                 }
             }
 
+            loadActivityLogs() {
+                const logDisplay = document.getElementById('logDisplay');
+                if (logDisplay) {
+                    // Sample log data - in production, fetch from backend
+                    const logs = [
+                        { timestamp: '2024-01-15 10:30:25', user: 'user@example.com', action: 'Image Encrypted', file: 'document.jpg' },
+                        { timestamp: '2024-01-15 10:25:10', user: 'user@example.com', action: 'Image Decrypted', file: 'photo.png' },
+                        { timestamp: '2024-01-15 09:45:33', user: 'admin@example.com', action: 'User Login', file: '-' },
+                        { timestamp: '2024-01-14 16:20:15', user: 'user2@example.com', action: 'Image Encrypted', file: 'secret.jpg' }
+                    ];
+
+                    let logHTML = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;">';
+                    logHTML += '<thead><tr style="background: #f8f9fa;"><th style="padding: 10px; border: 1px solid #ddd;">Timestamp</th><th style="padding: 10px; border: 1px solid #ddd;">User</th><th style="padding: 10px; border: 1px solid #ddd;">Action</th><th style="padding: 10px; border: 1px solid #ddd;">File</th></tr></thead><tbody>';
+                    
+                    logs.forEach(log => {
+                        logHTML += `<tr><td style="padding: 8px; border: 1px solid #ddd;">${log.timestamp}</td><td style="padding: 8px; border: 1px solid #ddd;">${log.user}</td><td style="padding: 8px; border: 1px solid #ddd;">${log.action}</td><td style="padding: 8px; border: 1px solid #ddd;">${log.file}</td></tr>`;
+                    });
+                    
+                    logHTML += '</tbody></table></div>';
+                    logDisplay.innerHTML = logHTML;
+                }
+            }
+
             showMessage(message, type) {
                 const messageDiv = document.getElementById('authMessage');
-                messageDiv.innerHTML = message;
-                messageDiv.className = `message ${type}`;
-                messageDiv.style.display = 'block';
-                
-                setTimeout(() => {
-                    messageDiv.style.display = 'none';
-                }, 5000);
+                if (messageDiv) {
+                    messageDiv.textContent = message;
+                    messageDiv.className = `message ${type}`;
+                    messageDiv.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        messageDiv.style.display = 'none';
+                    }, 5000);
+                }
             }
         }
 
@@ -596,6 +700,5 @@
             new AuthManager();
         });
     </script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
