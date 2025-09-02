@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Secure Image Encryption</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+        }
+
+        .section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input[type="file"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .auth-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .auth-section h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .auth-section input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .auth-section input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .auth-section a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .auth-section a:hover {
+            text-decoration: underline;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .btn-google {
+            background: #4285f4;
+            color: white;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .btn-google:hover {
+            background: #357ae8;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Container -->
+    <div id="authContainer" class="auth-container">
+        <div class="auth-card">
+            <h1>🔐 Secure Image Encryption</h1>
+            <p>Please login to access the encryption service</p>
+            
+            <div id="authMessage" class="message" style="display: none;"></div>
+            
+            <!-- Login Section -->
+            <div id="loginSection" class="auth-section">
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <input type="email" id="loginEmail" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="loginPassword" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="button" id="googleLoginBtn" class="btn btn-google">Login with Google</button>
+                </form>
+                <p><a href="#" id="showRegister">Don't have an account? Register</a></p>
+            </div>
+            
+            <!-- Register Section -->
+            <div id="registerSection" class="auth-section" style="display: none;">
+                <h2>Register</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <input type="email" id="registerEmail" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="registerPassword" placeholder="Password (min 6 characters)" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                    <button type="button" id="googleRegisterBtn" class="btn btn-google">Register with Google</button>
+                </form>
+                <p><a href="#" id="showLogin">Already have an account? Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div id="appContainer" class="container" style="display: none;">
+        <header>
+            <h1>🔐 Secure Image Encryption</h1>
+            <div id="userInfo" class="user-info"></div>
+            <p>Encrypt and decrypt your images with military-grade security</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Encryption Section -->
+            <div class="section">
+                <h2>📤 Encrypt Image</h2>
+                <form id="encryptForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="imageFile">Select Image:</label>
+                        <input type="file" id="imageFile" name="image" accept=".png,.jpg,.jpeg" required>
+                        <div class="file-info" id="imageInfo"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="encryptPin">Encryption PIN:</label>
+                        <input type="password" id="encryptPin" name="pin" placeholder="Enter secure PIN" required>
+                        <div class="pin-strength" id="pinStrength"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">🔒 Encrypt Image</button>
+                </form>
+                
+                <div id="encryptResult" class="result-section"></div>
+            </div>
+
+            <!-- Decryption Section -->
+            <div class="section">
+                <h2>📥 Decrypt Image</h2>
+                <form id="decryptForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="encryptedFile">Select Encrypted File:</label>
+                        <input type="file" id="encryptedFile" name="encrypted_file" accept=".enc" required>
+                        <div class="file-info" id="encryptedInfo"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="metaFile">Select Hash File (optional for integrity check):</label>
+                        <input type="file" id="metaFile" name="meta_file" accept=".meta">
+                        <div class="file-info" id="metaInfo"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="decryptPin">Decryption PIN:</label>
+                        <input type="password" id="decryptPin" name="pin" placeholder="Enter PIN" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-secondary">🔓 Decrypt Image</button>
+                </form>
+                
+                <div id="decryptResult" class="result-section"></div>
+            </div>
+        </div>
+
+        <!-- Stats Display -->
+        <div id="statsSection" class="stats-section" style="display: none;">
+            <h3>📊 Encryption Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Entropy</h4>
+                    <div class="stat-values">
+                        <span>Before: <span id="entropyBefore">-</span></span>
+                        <span>After: <span id="entropyAfter">-</span></span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h4>File Size</h4>
+                    <div class="stat-values">
+                        <span>Before: <span id="sizeBefore">-</span> KB</span>
+                        <span>After: <span id="sizeAfter">-</span> KB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Log Section -->
+        <div class="section">
+            <h2>📋 Activity Logs</h2>
+            <button id="viewLogsBtn" class="btn btn-info">View Activity Log</button>
+        </div>
+
+        <!-- Log Authentication Modal -->
+        <div id="logModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>🔐 Log Access Authentication</h3>
+                <form id="logAuthForm">
+                    <div class="form-group">
+                        <label for="logUsername">Username:</label>
+                        <input type="text" id="logUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="logPassword">Password:</label>
+                        <input type="password" id="logPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Log Display Modal -->
+        <div id="logDisplayModal" class="modal">
+            <div class="modal-content log-content">
+                <span class="close">&times;</span>
+                <h3>📋 Activity Log</h3>
+                <div id="logDisplay"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="spinner" style="display: none;">
+        <div class="spinner-circle"></div>
+        <p>Processing...</p>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase functions
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { getFirestore, collection, addDoc, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBV-zAo0GNgna_KmAvwqbi7XCEf4J0dMTU",
+            authDomain: "image-encryption-93417.firebaseapp.com",
+            projectId: "image-encryption-93417",
+            storageBucket: "image-encryption-93417.firebasestorage.app",
+            messagingSenderId: "1003767052492",
+            appId: "1:1003767052492:web:bc0cdf250486376052ea69"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Authentication functions
+        const loginUser = async (email, password) => {
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                return { success: true, user: userCredential.user };
+            } catch (error) {
+                console.error('Login error:', error);
+                return { success: false, error: error.message };
+            }
+        };
+
+        const registerUser = async (email, password) => {
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                try {
+                    await setDoc(doc(db, 'users', userCredential.user.uid), {
+                        email: userCredential.user.email,
+                        createdAt: new Date(),
+                        encryptionCount: 0
+                    });
+                } catch (firestoreError) {
+                    console.warn('Firestore profile creation failed:', firestoreError);
+                }
+                return { success: true, user: userCredential.user };
+            } catch (error) {
+                console.error('Registration error:', error);
+                return { success: false, error: error.message };
+            }
+        };
+
+        const loginWithGoogle = async () => {
+            try {
+                const provider = new GoogleAuthProvider();
+                const userCredential = await signInWithPopup(auth, provider);
+                try {
+                    await setDoc(doc(db, 'users', userCredential.user.uid), {
+                        email: userCredential.user.email,
+                        createdAt: new Date(),
+                        encryptionCount: 0
+                    }, { merge: true });
+                } catch (firestoreError) {
+                    console.warn('Firestore profile creation failed:', firestoreError);
+                }
+                return { success: true, user: userCredential.user };
+            } catch (error) {
+                console.error('Google login error:', error);
+                return { success: false, error: error.message };
+            }
+        };
+
+        const logoutUser = async () => {
+            try {
+                await signOut(auth);
+                return { success: true };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        };
+
+        // Auth Manager Class
+        class AuthManager {
+            constructor() {
+                this.currentUser = null;
+                this.init();
+            }
+
+            init() {
+                onAuthStateChanged(auth, (user) => {
+                    this.currentUser = user;
+                    this.updateUI();
+                });
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // Login form
+                document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('loginEmail').value;
+                    const password = document.getElementById('loginPassword').value;
+                    
+                    const result = await loginUser(email, password);
+                    if (result.success) {
+                        this.showMessage('✅ Login successful!', 'success');
+                    } else {
+                        this.showMessage(`❌ Login failed: ${result.error}`, 'error');
+                    }
+                });
+
+                // Register form
+                document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('registerEmail').value;
+                    const password = document.getElementById('registerPassword').value;
+                    
+                    const result = await registerUser(email, password);
+                    if (result.success) {
+                        this.showMessage('✅ Registration successful!', 'success');
+                    } else {
+                        this.showMessage(`❌ Registration failed: ${result.error}`, 'error');
+                    }
+                });
+
+                // Google login button
+                document.getElementById('googleLoginBtn')?.addEventListener('click', async () => {
+                    const result = await loginWithGoogle();
+                    if (result.success) {
+                        this.showMessage('✅ Google login successful!', 'success');
+                    } else {
+                        this.showMessage(`❌ Google login failed: ${result.error}`, 'error');
+                    }
+                });
+
+                // Google register button
+                document.getElementById('googleRegisterBtn')?.addEventListener('click', async () => {
+                    const result = await loginWithGoogle();
+                    if (result.success) {
+                        this.showMessage('✅ Google registration successful!', 'success');
+                    } else {
+                        this.showMessage(`❌ Google registration failed: ${result.error}`, 'error');
+                    }
+                });
+
+                // Toggle between login/register
+                document.getElementById('showRegister')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('registerSection').style.display = 'block';
+                });
+
+                document.getElementById('showLogin')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('registerSection').style.display = 'none';
+                    document.getElementById('loginSection').style.display = 'block';
+                });
+            }
+
+            updateUI() {
+                const authContainer = document.getElementById('authContainer');
+                const appContainer = document.getElementById('appContainer');
+                const userInfo = document.getElementById('userInfo');
+
+                if (this.currentUser) {
+                    authContainer.style.display = 'none';
+                    appContainer.style.display = 'block';
+                    userInfo.innerHTML = `
+                        <span>Welcome, ${this.currentUser.email}</span>
+                        <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+                    `;
+                    // Re-attach logout listener
+                    document.getElementById('logoutBtn').addEventListener('click', async () => {
+                        const result = await logoutUser();
+                        if (result.success) {
+                            this.showMessage('✅ Logged out successfully!', 'success');
+                        }
+                    });
+                } else {
+                    authContainer.style.display = 'block';
+                    appContainer.style.display = 'none';
+                    userInfo.innerHTML = '';
+                }
+            }
+
+            showMessage(message, type) {
+                const messageDiv = document.getElementById('authMessage');
+                messageDiv.innerHTML = message;
+                messageDiv.className = `message ${type}`;
+                messageDiv.style.display = 'block';
+                
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new AuthManager();
+        });
+    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
