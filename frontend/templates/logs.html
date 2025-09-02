@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Logs - Secure Image Encryption</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Activity Logs</h1>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Main</a>
+        </header>
+
+        <div class="log-container">
+            <div id="logTable"></div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-load logs if authenticated
+        fetch('/get_logs')
+            .then(response => response.json())
+            .then(data => {
+                if (data.logs) {
+                    displayLogs(data.logs);
+                } else {
+                    document.getElementById('logTable').innerHTML = '<p>Please authenticate to view logs.</p>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('logTable').innerHTML = '<p>Error loading logs.</p>';
+            });
+
+        function displayLogs(logs) {
+            const logTable = document.getElementById('logTable');
+            if (logs.length === 0) {
+                logTable.innerHTML = '<p>No logs available.</p>';
+                return;
+            }
+
+            let html = '<table class="log-table"><thead><tr><th>Timestamp</th><th>Event</th></tr></thead><tbody>';
+            logs.forEach(row => {
+                html += `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`;
+            });
+            html += '</tbody></table>';
+            logTable.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
