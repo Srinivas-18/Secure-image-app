@@ -21,13 +21,18 @@ app = Flask(__name__,
             static_folder='../frontend/static')
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-change-this')
 
-# Enable CORS for cross-origin requests (Vercel → Render)
+# Enable CORS for cross-origin requests (Frontend → Backend)
 CORS(app, origins=[
     "http://localhost:3000", 
     "http://localhost:5000",
+    "http://127.0.0.1:5000",
+    "https://srinivas-18.github.io",
+    "https://srinivas-18.github.io/Secure-image-app/",
+    "https://srinivas-18.github.io/Secure-image-app",  # Without trailing slash
     "https://*.vercel.app",
-    "https://secure-image-app.vercel.app"
-])
+    "https://*.netlify.app",
+    "*"  # Allow all origins for development - remove in production
+], supports_credentials=True)
 
 # Configuration
 UPLOAD_FOLDER = 'backend/uploads'
