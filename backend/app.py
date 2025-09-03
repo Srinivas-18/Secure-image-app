@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_file, session
+from flask import Flask, request, jsonify, send_file, session
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
@@ -16,9 +16,7 @@ from werkzeug.utils import secure_filename
 # Load environment variables
 load_dotenv('../.env')
 
-app = Flask(__name__, 
-            template_folder='../frontend/templates',
-            static_folder='../frontend/static')
+app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-change-this')
 
 # Enable CORS for cross-origin requests (Frontend → Backend)
@@ -46,7 +44,17 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return jsonify({
+        'message': 'Secure Image Encryption API',
+        'status': 'running',
+        'endpoints': [
+            '/check_pin_strength',
+            '/encrypt',
+            '/decrypt',
+            '/authenticate_logs',
+            '/get_logs'
+        ]
+    })
 
 @app.route('/check_pin_strength', methods=['POST'])
 def check_pin_strength_route():
