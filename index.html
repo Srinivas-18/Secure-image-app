@@ -834,6 +834,10 @@
                             body: formData
                         });
 
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+
                         const data = await response.json();
                         this.hideLoading();
 
@@ -859,7 +863,8 @@
                         }
                     } catch (error) {
                         this.hideLoading();
-                        this.showResult('encryptResult', `❌ Error: ${error.message}`, false);
+                        console.error('Encryption error:', error);
+                        this.showResult('encryptResult', `❌ Connection Error: Cannot reach backend server. Please check if the backend is running.`, false);
                     }
                 });
 
