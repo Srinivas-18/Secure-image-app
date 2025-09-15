@@ -30,8 +30,8 @@ def get_file_hash(data):
     return sha256.hexdigest()
 
 def log_event(event):
-    os.makedirs("../logs", exist_ok=True)
-    log_path = os.path.join("../logs", "activity_log.csv")
+    os.makedirs("logs", exist_ok=True)
+    log_path = os.path.join("logs", "activity_log.csv")
     file_exists = os.path.isfile(log_path)
 
     with open(log_path, "a", newline='') as log_file:

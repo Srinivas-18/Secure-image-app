@@ -45,10 +45,10 @@ def encrypt_image_web(image_path, pin):
         # Generate filename for encrypted file
         base_name = os.path.splitext(os.path.basename(image_path))[0]
         encrypted_filename = f"{base_name}_encrypted.enc"
-        encrypted_path = os.path.join("backend/uploads", encrypted_filename)
+        encrypted_path = os.path.join("uploads", encrypted_filename)
         
         # Save encrypted file
-        os.makedirs("backend/uploads", exist_ok=True)
+        os.makedirs("uploads", exist_ok=True)
         with open(encrypted_path, "wb") as f:
             f.write(encrypted_data)
         

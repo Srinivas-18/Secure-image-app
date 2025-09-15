@@ -661,6 +661,11 @@
         const loginWithGoogle = async () => {
             try {
                 const provider = new GoogleAuthProvider();
+                provider.setCustomParameters({
+                    prompt: 'select_account'
+                });
+                
+                // Use redirect instead of popup to avoid COOP issues
                 const userCredential = await signInWithPopup(auth, provider);
                 try {
                     await setDoc(doc(db, 'users', userCredential.user.uid), {
@@ -674,6 +679,10 @@
                 return { success: true, user: userCredential.user };
             } catch (error) {
                 console.error('Google login error:', error);
+                // If popup fails, suggest redirect method
+                if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+                    return { success: false, error: 'Popup blocked. Please disable popup blocker or use email login.' };
+                }
                 return { success: false, error: error.message };
             }
         };
@@ -1046,13 +1055,8 @@
             }
 
             getApiUrl() {
-                // Auto-detect API URL based on environment
-                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    return 'http://localhost:5000';
-                } else {
-                    // Backend URL for GitHub Pages deployment
-                    return 'https://secure-image-encryption-api.onrender.com';
-                }
+                // Always use the deployed backend URL
+                return 'https://secure-image-encryption-api.onrender.com';
             }
 
             showLoading() {
