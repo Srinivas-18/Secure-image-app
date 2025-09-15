@@ -33,7 +33,7 @@ CORS(app, origins=[
 ], supports_credentials=True)
 
 # Configuration
-UPLOAD_FOLDER = 'backend/uploads'
+UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB
 
@@ -90,7 +90,8 @@ def encrypt_route():
         result = encrypt_image_web(temp_path, pin)
         
         # Clean up original file
-        os.remove(temp_path)
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
         
         if result['success']:
             return jsonify({
@@ -184,7 +185,7 @@ def download_file(filename):
 
 @app.route('/logs')
 def view_logs():
-    return render_template('logs.html')
+    return jsonify({'error': 'Use /get_logs endpoint with authentication'}), 401
 
 @app.route('/authenticate_logs', methods=['POST'])
 def authenticate_logs():
@@ -203,7 +204,7 @@ def get_logs():
     if not session.get('authenticated'):
         return jsonify({'error': 'Not authenticated'}), 401
     
-    log_path = os.path.join("../logs", "activity_log.csv")
+    log_path = os.path.join("logs", "activity_log.csv")
     if not os.path.exists(log_path):
         return jsonify({'logs': []})
     
