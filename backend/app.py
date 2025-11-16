@@ -104,8 +104,13 @@ def encrypt_route():
             return jsonify({'error': result['error']}), 500
             
     except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
         log_event(f"Encryption error: {str(e)}")
-        return jsonify({'error': f'Encryption failed: {str(e)}'}), 500
+        log_event(f"Error traceback: {error_details}")
+        print(f"Encryption error: {str(e)}")
+        print(f"Traceback: {error_details}")
+        return jsonify({'error': f'Encryption failed: {str(e)}', 'details': error_details}), 500
 
 @app.route('/decrypt', methods=['POST'])
 def decrypt_route():
@@ -220,4 +225,4 @@ def get_logs():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5500)

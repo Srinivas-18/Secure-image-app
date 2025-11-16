@@ -627,6 +627,11 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        
+        // Allow localhost in development
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            auth.settings.appVerificationDisabledForTesting = true;
+        }
 
         // Authentication functions
         const loginUser = async (email, password) => {
@@ -712,6 +717,8 @@
             }
 
             setupEventListeners() {
+                const self = this;
+                
                 // Login form
                 document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
                     e.preventDefault();
@@ -720,9 +727,9 @@
                     
                     const result = await loginUser(email, password);
                     if (result.success) {
-                        this.showMessage('✅ Login successful!', 'success');
+                        self.showMessage('✅ Login successful!', 'success');
                     } else {
-                        this.showMessage(`❌ Login failed: ${result.error}`, 'error');
+                        self.showMessage(`❌ Login failed: ${result.error}`, 'error');
                     }
                 });
 
@@ -734,9 +741,9 @@
                     
                     const result = await registerUser(email, password);
                     if (result.success) {
-                        this.showMessage('✅ Registration successful!', 'success');
+                        self.showMessage('✅ Registration successful!', 'success');
                     } else {
-                        this.showMessage(`❌ Registration failed: ${result.error}`, 'error');
+                        self.showMessage(`❌ Registration failed: ${result.error}`, 'error');
                     }
                 });
 
@@ -744,9 +751,9 @@
                 document.getElementById('googleLoginBtn')?.addEventListener('click', async () => {
                     const result = await loginWithGoogle();
                     if (result.success) {
-                        this.showMessage('✅ Google login successful!', 'success');
+                        self.showMessage('✅ Google login successful!', 'success');
                     } else {
-                        this.showMessage(`❌ Google login failed: ${result.error}`, 'error');
+                        self.showMessage(`❌ Google login failed: ${result.error}`, 'error');
                     }
                 });
 
@@ -754,9 +761,9 @@
                 document.getElementById('googleRegisterBtn')?.addEventListener('click', async () => {
                     const result = await loginWithGoogle();
                     if (result.success) {
-                        this.showMessage('✅ Google registration successful!', 'success');
+                        self.showMessage('✅ Google registration successful!', 'success');
                     } else {
-                        this.showMessage(`❌ Google registration failed: ${result.error}`, 'error');
+                        self.showMessage(`❌ Google registration failed: ${result.error}`, 'error');
                     }
                 });
 
@@ -799,7 +806,7 @@
                     const password = document.getElementById('logPassword').value;
                     
                     try {
-                        const response = await fetch(`${this.getApiUrl()}/authenticate_logs`, {
+                        const response = await fetch(`${self.getApiUrl()}/authenticate_logs`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -812,12 +819,12 @@
                         if (data.success) {
                             document.getElementById('logModal').style.display = 'none';
                             document.getElementById('logDisplayModal').style.display = 'block';
-                            await this.loadActivityLogs();
+                            await self.loadActivityLogs();
                         } else {
-                            this.showMessage('❌ Invalid credentials for log access', 'error');
+                            self.showMessage('❌ Invalid credentials for log access', 'error');
                         }
                     } catch (error) {
-                        this.showMessage('❌ Authentication error', 'error');
+                        self.showMessage('❌ Authentication error', 'error');
                     }
                 });
 
@@ -830,15 +837,15 @@
                     const pin = document.getElementById('encryptPin').value;
 
                     if (!file || !pin) {
-                        this.showResult('encryptResult', '❌ Please select an image and enter a PIN.', false);
+                        self.showResult('encryptResult', '❌ Please select an image and enter a PIN.', false);
                         return;
                     }
 
-                    this.showLoading();
-                    this.hideResult('encryptResult');
+                    self.showLoading();
+                    self.hideResult('encryptResult');
 
                     try {
-                        const response = await fetch(`${this.getApiUrl()}/encrypt`, {
+                        const response = await fetch(`${self.getApiUrl()}/encrypt`, {
                             method: 'POST',
                             body: formData
                         });
@@ -848,16 +855,16 @@
                         }
 
                         const data = await response.json();
-                        this.hideLoading();
+                        self.hideLoading();
 
                         if (data.success) {
-                            this.showResult('encryptResult', `
+                            self.showResult('encryptResult', `
                                 ✅ <strong>Encryption Successful!</strong><br>
                                 📁 Encrypted file: ${data.encrypted_filename}<br>
                                 🔑 Hash file: ${data.meta_filename}<br>
                                 <div style="margin-top: 15px;">
-                                    <a href="${this.getApiUrl()}/download/${data.encrypted_filename}" class="download-link">📥 Download Encrypted File</a>
-                                    <a href="${this.getApiUrl()}/download/${data.meta_filename}" class="download-link" style="margin-left: 10px;">📄 Download Hash File</a>
+                                    <a href="${self.getApiUrl()}/download/${data.encrypted_filename}" class="download-link">📥 Download Encrypted File</a>
+                                    <a href="${self.getApiUrl()}/download/${data.meta_filename}" class="download-link" style="margin-left: 10px;">📄 Download Hash File</a>
                                 </div>
                                 <div style="margin-top: 10px; padding: 10px; background: #e6f3ff; border-radius: 5px; font-size: 14px;">
                                     💡 <strong>Important:</strong> Keep both files together for decryption and integrity verification.<br>
@@ -866,14 +873,14 @@
                             `);
                             
                             // Show statistics
-                            this.displayStats(data.stats, 'encrypt');
+                            self.displayStats(data.stats, 'encrypt');
                         } else {
-                            this.showResult('encryptResult', `❌ Encryption failed: ${data.error}`, false);
+                            self.showResult('encryptResult', `❌ Encryption failed: ${data.error}`, false);
                         }
                     } catch (error) {
-                        this.hideLoading();
+                        self.hideLoading();
                         console.error('Encryption error:', error);
-                        this.showResult('encryptResult', `❌ Connection Error: Cannot reach backend server. Please check if the backend is running.`, false);
+                        self.showResult('encryptResult', `❌ Connection Error: Cannot reach backend server. Please check if the backend is running on http://localhost:5500`, false);
                     }
                 });
 
@@ -886,49 +893,50 @@
                     const pin = document.getElementById('decryptPin').value;
 
                     if (!file || !pin) {
-                        this.showResult('decryptResult', '❌ Please select an encrypted file and enter the PIN.', false);
+                        self.showResult('decryptResult', '❌ Please select an encrypted file and enter the PIN.', false);
                         return;
                     }
 
-                    this.showLoading();
-                    this.hideResult('decryptResult');
+                    self.showLoading();
+                    self.hideResult('decryptResult');
 
                     try {
-                        const response = await fetch(`${this.getApiUrl()}/decrypt`, {
+                        const response = await fetch(`${self.getApiUrl()}/decrypt`, {
                             method: 'POST',
                             body: formData
                         });
 
                         const data = await response.json();
-                        this.hideLoading();
+                        self.hideLoading();
 
                         if (data.success) {
-                            this.showResult('decryptResult', `
+                            self.showResult('decryptResult', `
                                 ✅ <strong>Decryption Successful!</strong><br>
                                 🖼️ Image decrypted successfully<br>
                                 ${data.stats.integrity_verified ? '✅ Integrity verified' : '⚠️ No integrity check'}
                                 <br><br>
                                 <img src="data:image/png;base64,${data.decrypted_image}" class="image-preview" alt="Decrypted Image">
                                 <br>
-                                <a href="${this.getApiUrl()}/download/${data.decrypted_filename}" class="download-link">📥 Download Decrypted Image</a>
+                                <a href="${self.getApiUrl()}/download/${data.decrypted_filename}" class="download-link">📥 Download Decrypted Image</a>
                                 <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 5px; font-size: 14px;">
                                     🗑️ <strong>Note:</strong> Encrypted files (.enc and .meta) have been automatically deleted.
                                 </div>
                             `);
                             
                             // Show statistics
-                            this.displayStats(data.stats, 'decrypt');
+                            self.displayStats(data.stats, 'decrypt');
                         } else {
-                            this.showResult('decryptResult', `❌ Decryption failed: ${data.error}`, false);
+                            self.showResult('decryptResult', `❌ Decryption failed: ${data.error}`, false);
                         }
                     } catch (error) {
-                        this.hideLoading();
-                        this.showResult('decryptResult', `❌ Error: ${error.message}`, false);
+                        self.hideLoading();
+                        self.showResult('decryptResult', `❌ Error: ${error.message}`, false);
                     }
                 });
 
                 // PIN strength checker
                 document.getElementById('encryptPin')?.addEventListener('input', async (e) => {
+                    e.preventDefault();
                     const pin = e.target.value;
                     const pinStrength = document.getElementById('pinStrength');
                     
@@ -938,7 +946,7 @@
                     }
 
                     try {
-                        const response = await fetch(`${this.getApiUrl()}/check_pin_strength`, {
+                        const response = await fetch(`${self.getApiUrl()}/check_pin_strength`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -946,12 +954,19 @@
                             body: JSON.stringify({ pin: pin })
                         });
 
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+
                         const data = await response.json();
                         pinStrength.textContent = `PIN Strength: ${data.strength}`;
                         pinStrength.className = `pin-strength ${data.strength.toLowerCase()}`;
                         pinStrength.style.display = 'block';
                     } catch (error) {
                         console.error('Error checking PIN strength:', error);
+                        pinStrength.textContent = 'PIN Strength: Unable to check';
+                        pinStrength.className = 'pin-strength weak';
+                        pinStrength.style.display = 'block';
                     }
                 });
 
@@ -1055,8 +1070,13 @@
             }
 
             getApiUrl() {
-                // Always use the deployed backend URL
-                return 'https://secure-image-encryption-api.onrender.com';
+                // On desktop dev use localhost; on phone use same host IP (served via 8000) for backend
+                const host = window.location.hostname;
+                if (host === 'localhost' || host === '127.0.0.1') {
+                    return 'http://localhost:5500';
+                }
+                // Assume frontend loaded from http://<PC_IP>:8000 so backend is http://<PC_IP>:5500
+                return `http://${host}:5500`;
             }
 
             showLoading() {

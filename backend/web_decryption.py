@@ -6,19 +6,25 @@ import base64
 from pixel_shift import reverse_unshift_pixels
 from key_utils import generate_key_from_pin, get_file_hash, get_file_size_kb, log_event, calculate_entropy
 
+# Resolve project root and central uploads directory (shared with encryption)
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+UPLOADS_DIR = os.path.join(ROOT_DIR, 'uploads')
+
 def decrypt_image_web(encrypted_file_path, pin):
     """
     Web-based image decryption function
     Returns a dictionary with success status and relevant data
     """
     try:
-        # Handle both absolute and relative paths
+        # Normalize input path: we expect app.py to pass something like 'uploads/filename.enc'
         if not os.path.isabs(encrypted_file_path):
-            # If relative path, check in uploads directory first
-            uploads_path = os.path.join("backend/uploads", encrypted_file_path)
-            if os.path.exists(uploads_path):
-                encrypted_file_path = uploads_path
-        
+            # First try direct relative path from current working directory
+            if not os.path.exists(encrypted_file_path):
+                # Fallback: join with central uploads directory
+                candidate = os.path.join(UPLOADS_DIR, os.path.basename(encrypted_file_path))
+                if os.path.exists(candidate):
+                    encrypted_file_path = candidate
+
         if not os.path.exists(encrypted_file_path):
             return {'success': False, 'error': f'Encrypted file not found: {encrypted_file_path}'}
         
@@ -80,7 +86,8 @@ def decrypt_image_web(encrypted_file_path, pin):
             base_name = base_name[:-10]  # Remove '_encrypted' suffix
         
         decrypted_filename = f"{base_name}_decrypted.png"
-        decrypted_path = os.path.join("backend/uploads", decrypted_filename)
+        os.makedirs(UPLOADS_DIR, exist_ok=True)
+        decrypted_path = os.path.join(UPLOADS_DIR, decrypted_filename)
         
         # Save decrypted image file
         Image.fromarray(unshifted_img).save(decrypted_path)

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        .result {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Image Encryption API Tester</h1>
+        
+        <h2>Test PIN Strength:</h2>
+        <input type="text" id="pinInput" placeholder="Enter PIN" value="Test@1234">
+        <button onclick="testPinStrength()">Check PIN Strength</button>
+        <div id="pinResult" class="result" style="display:none;"></div>
+        
+        <h2>Test API Health:</h2>
+        <button onclick="testApiStatus()">Get API Status</button>
+        <div id="statusResult" class="result" style="display:none;"></div>
+        
+        <h2>Test Encryption:</h2>
+        <input type="file" id="imageInput" accept="image/*">
+        <input type="password" id="encryptPin" placeholder="Enter encryption PIN" value="Test@1234">
+        <button onclick="testEncryption()">Encrypt Image</button>
+        <div id="encryptResult" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5500';
+
+        async function testApiStatus() {
+            try {
+                const response = await fetch(`${API_URL}/`);
+                const data = await response.json();
+                const resultDiv = document.getElementById('statusResult');
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = 'result success';
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                const resultDiv = document.getElementById('statusResult');
+                resultDiv.textContent = `❌ Error: ${error.message}\n\nMake sure Flask is running on ${API_URL}`;
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        async function testPinStrength() {
+            try {
+                const pin = document.getElementById('pinInput').value;
+                const response = await fetch(`${API_URL}/check_pin_strength`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ pin: pin })
+                });
+                const data = await response.json();
+                const resultDiv = document.getElementById('pinResult');
+                resultDiv.textContent = `PIN Strength: ${data.strength}\n\nFull Response:\n${JSON.stringify(data, null, 2)}`;
+                resultDiv.className = 'result success';
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                const resultDiv = document.getElementById('pinResult');
+                resultDiv.textContent = `❌ Error: ${error.message}`;
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        async function testEncryption() {
+            try {
+                const file = document.getElementById('imageInput').files[0];
+                const pin = document.getElementById('encryptPin').value;
+                
+                if (!file) {
+                    throw new Error('Please select an image file');
+                }
+                if (!pin) {
+                    throw new Error('Please enter a PIN');
+                }
+
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('pin', pin);
+
+                const resultDiv = document.getElementById('encryptResult');
+                resultDiv.textContent = 'Encrypting... This may take a moment...';
+                resultDiv.className = 'result';
+                resultDiv.style.display = 'block';
+
+                const response = await fetch(`${API_URL}/encrypt`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = data.success ? 'result success' : 'result error';
+            } catch (error) {
+                const resultDiv = document.getElementById('encryptResult');
+                resultDiv.textContent = `❌ Error: ${error.message}`;
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
