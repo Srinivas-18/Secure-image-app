@@ -33,11 +33,16 @@ CORS(app, origins=[
 ], supports_credentials=True)
 
 # Configuration
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Ensure uploads directory exists (use absolute path for Render/cloud hosting)
+try:
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    print(f"✅ Upload folder created/verified at: {UPLOAD_FOLDER}")
+except Exception as e:
+    print(f"⚠️ Warning: Could not create upload folder: {e}")
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -66,6 +71,10 @@ def check_pin_strength_route():
 @app.route('/encrypt', methods=['POST'])
 def encrypt_route():
     try:
+        print(f"📥 Encrypt request received from {request.origin}")
+        print(f"Files: {list(request.files.keys())}")
+        print(f"Form data: {list(request.form.keys())}")
+        
         if 'image' not in request.files:
             return jsonify({'error': 'No image file provided'}), 400
         
