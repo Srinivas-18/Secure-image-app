@@ -1070,17 +1070,14 @@
             }
 
             getApiUrl() {
-                // Always use deployed Render backend (temporary for testing)
+                // Use localhost for local testing
+                const host = window.location.hostname;
+                const isLocalhost = host === 'localhost' || host === '127.0.0.1';
+                const isPrivateIPv4 = /^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host);
+                if (isLocalhost || isPrivateIPv4) {
+                    return `http://${host}:5500`;
+                }
                 return 'https://secure-image-app-k8rm.onrender.com';
-                
-                // Uncomment below for local/LAN development:
-                // const host = window.location.hostname;
-                // const isLocalhost = host === 'localhost' || host === '127.0.0.1';
-                // const isPrivateIPv4 = /^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host);
-                // if (isLocalhost || isPrivateIPv4) {
-                //     return `http://${host}:5500`;
-                // }
-                // return 'https://secure-image-app-k8rm.onrender.com';
             }
 
             showLoading() {
