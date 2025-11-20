@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify, send_file, session
 from flask_cors import CORS
 import os
+import sys
+import traceback
 from dotenv import load_dotenv
 from web_encryption import encrypt_image_web
 from web_decryption import decrypt_image_web
@@ -13,11 +15,47 @@ import io
 import base64
 from werkzeug.utils import secure_filename
 
+# Force unbuffered output for debugging
+sys.stdout.reconfigure(line_buffering=True)
+sys.stderr.reconfigure(line_buffering=True)
+
 # Load environment variables
 load_dotenv('../.env')
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-change-this')
+
+# Configure max content length (16MB)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+# WSGI middleware to catch errors before Flask routing
+class ErrorLoggingMiddleware:
+    def __init__(self, app):
+        self.app = app
+    
+    def __call__(self, environ, start_response):
+        try:
+            print(f"🔍 MIDDLEWARE: {environ['REQUEST_METHOD']} {environ['PATH_INFO']}", file=sys.stderr, flush=True)
+            return self.app(environ, start_response)
+        except Exception as e:
+            print(f"\n{'='*60}", file=sys.stderr, flush=True)
+            print(f"❌ MIDDLEWARE EXCEPTION: {str(e)}", file=sys.stderr, flush=True)
+            print(traceback.format_exc(), file=sys.stderr, flush=True)
+            print(f"{'='*60}\n", file=sys.stderr, flush=True)
+            raise
+
+app.wsgi_app = ErrorLoggingMiddleware(app.wsgi_app)
+
+# Global error handler to catch all exceptions
+@app.errorhandler(Exception)
+def handle_exception(e):
+    error_details = traceback.format_exc()
+    print(f"\n{'='*60}", file=sys.stderr, flush=True)
+    print(f"❌ FLASK ERROR HANDLER: {str(e)}", file=sys.stderr, flush=True)
+    print(f"{'='*60}", file=sys.stderr, flush=True)
+    print(error_details, file=sys.stderr, flush=True)
+    print(f"{'='*60}\n", file=sys.stderr, flush=True)
+    return jsonify({'error': f'Server error: {str(e)}', 'details': error_details}), 500
 
 # Enable CORS for cross-origin requests (Frontend → Backend)
 CORS(app, origins=[
@@ -75,14 +113,15 @@ def check_pin_strength_route():
 @app.route('/encrypt', methods=['POST'])
 def encrypt_route():
     try:
-        print(f"📥 Encrypt request received")
-        print(f"Request method: {request.method}")
-        print(f"Content-Type: {request.content_type}")
-        print(f"Files keys: {list(request.files.keys())}")
-        print(f"Form keys: {list(request.form.keys())}")
+        print(f"\n{'='*60}", file=sys.stderr, flush=True)
+        print(f"📥 ENCRYPT ROUTE CALLED", file=sys.stderr, flush=True)
+        print(f"Request method: {request.method}", file=sys.stderr, flush=True)
+        print(f"Content-Type: {request.content_type}", file=sys.stderr, flush=True)
+        print(f"Content-Length: {request.content_length}", file=sys.stderr, flush=True)
+        print(f"{'='*60}\n", file=sys.stderr, flush=True)
         
         if 'image' not in request.files:
-            print("❌ No 'image' in request.files")
+            print(f"❌ No 'image' in request.files. Available: {list(request.files.keys())}", file=sys.stderr, flush=True)
             return jsonify({'error': 'No image file provided'}), 400
         
         file = request.files['image']
