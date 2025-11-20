@@ -1070,13 +1070,17 @@
             }
 
             getApiUrl() {
-                // On desktop dev use localhost; on phone use same host IP (served via 8000) for backend
+                // Determine backend URL based on where the frontend is served from.
+                // - If running locally (localhost/127.0.0.1) or on a private LAN IP, call local backend on port 5500.
+                // - Otherwise use the deployed backend on Render.
                 const host = window.location.hostname;
-                if (host === 'localhost' || host === '127.0.0.1') {
-                    return 'http://localhost:5500';
+                const isLocalhost = host === 'localhost' || host === '127.0.0.1';
+                const isPrivateIPv4 = /^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host);
+                if (isLocalhost || isPrivateIPv4) {
+                    return `http://${host}:5500`;
                 }
-                // Assume frontend loaded from http://<PC_IP>:8000 so backend is http://<PC_IP>:5500
-                return `http://${host}:5500`;
+                // Production/deployed backend URL (Render)
+                return 'https://secure-image-app-k8rm.onrender.com';
             }
 
             showLoading() {
