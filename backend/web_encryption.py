@@ -6,6 +6,10 @@ from PIL import Image
 from pixel_shift import reverse_shift_pixels
 from key_utils import generate_key_from_pin, get_file_hash, log_event, calculate_entropy, get_file_size_kb
 
+# Resolve absolute uploads path from project root
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+UPLOADS_DIR = os.path.join(ROOT_DIR, 'uploads')
+
 def encrypt_image_web(image_path, pin):
     """
     Web-based image encryption function
@@ -45,10 +49,10 @@ def encrypt_image_web(image_path, pin):
         # Generate filename for encrypted file
         base_name = os.path.splitext(os.path.basename(image_path))[0]
         encrypted_filename = f"{base_name}_encrypted.enc"
-        encrypted_path = os.path.join("uploads", encrypted_filename)
+        encrypted_path = os.path.join(UPLOADS_DIR, encrypted_filename)
         
         # Save encrypted file
-        os.makedirs("uploads", exist_ok=True)
+        os.makedirs(UPLOADS_DIR, exist_ok=True)
         with open(encrypted_path, "wb") as f:
             f.write(encrypted_data)
         
