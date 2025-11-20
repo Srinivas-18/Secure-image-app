@@ -75,11 +75,14 @@ def check_pin_strength_route():
 @app.route('/encrypt', methods=['POST'])
 def encrypt_route():
     try:
-        print(f"📥 Encrypt request received from {request.origin}")
-        print(f"Files: {list(request.files.keys())}")
-        print(f"Form data: {list(request.form.keys())}")
+        print(f"📥 Encrypt request received")
+        print(f"Request method: {request.method}")
+        print(f"Content-Type: {request.content_type}")
+        print(f"Files keys: {list(request.files.keys())}")
+        print(f"Form keys: {list(request.form.keys())}")
         
         if 'image' not in request.files:
+            print("❌ No 'image' in request.files")
             return jsonify({'error': 'No image file provided'}), 400
         
         file = request.files['image']
@@ -118,11 +121,16 @@ def encrypt_route():
             
     except Exception as e:
         import traceback
+        import sys
         error_details = traceback.format_exc()
-        log_event(f"Encryption error: {str(e)}")
+        error_msg = f"Encryption error: {str(e)}"
+        print(f"\n{'='*60}", file=sys.stderr)
+        print(f"❌ {error_msg}", file=sys.stderr)
+        print(f"{'='*60}", file=sys.stderr)
+        print(error_details, file=sys.stderr)
+        print(f"{'='*60}\n", file=sys.stderr)
+        log_event(error_msg)
         log_event(f"Error traceback: {error_details}")
-        print(f"Encryption error: {str(e)}")
-        print(f"Traceback: {error_details}")
         return jsonify({'error': f'Encryption failed: {str(e)}', 'details': error_details}), 500
 
 @app.route('/decrypt', methods=['POST'])
