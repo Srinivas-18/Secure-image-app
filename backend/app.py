@@ -156,6 +156,10 @@ def encrypt_route():
         result = encrypt_image_web(temp_path, pin)
         print(f"✅ Encryption completed. Success: {result.get('success')}", file=sys.stderr, flush=True)
         
+        if not result.get('success'):
+            error_msg = result.get('error', 'Unknown encryption error')
+            print(f"❌ Encryption failed with error: {error_msg}", file=sys.stderr, flush=True)
+        
         # Clean up original file
         if os.path.exists(temp_path):
             os.remove(temp_path)

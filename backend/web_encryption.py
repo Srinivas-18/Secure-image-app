@@ -15,36 +15,61 @@ def encrypt_image_web(image_path, pin):
     Web-based image encryption function
     Returns a dictionary with success status and relevant data
     """
+    import sys
     try:
+        print(f"🔍 [ENCRYPT] Starting with image_path: {image_path}", file=sys.stderr, flush=True)
+        
         if not os.path.exists(image_path):
-            return {'success': False, 'error': 'Image file not found'}
+            error_msg = f'Image file not found: {image_path}'
+            print(f"❌ [ENCRYPT] {error_msg}", file=sys.stderr, flush=True)
+            return {'success': False, 'error': error_msg}
         
         if not pin:
+            print(f"❌ [ENCRYPT] PIN is required", file=sys.stderr, flush=True)
             return {'success': False, 'error': 'PIN is required'}
 
+        print(f"✅ [ENCRYPT] File exists, loading image...", file=sys.stderr, flush=True)
         # Load and process image
         image = Image.open(image_path).convert('RGB')
+        print(f"✅ [ENCRYPT] Image loaded: {image.size}", file=sys.stderr, flush=True)
+        
         entropy_before = calculate_entropy(image)
+        print(f"✅ [ENCRYPT] Entropy calculated: {entropy_before}", file=sys.stderr, flush=True)
+        
         size_before = get_file_size_kb(image_path)
+        print(f"✅ [ENCRYPT] Size before: {size_before}KB", file=sys.stderr, flush=True)
 
         # Apply pixel shift
+        print(f"🔄 [ENCRYPT] Applying pixel shift...", file=sys.stderr, flush=True)
         shifted_img = reverse_shift_pixels(image)
         entropy_after = calculate_entropy(Image.fromarray(shifted_img))
+        print(f"✅ [ENCRYPT] Pixel shift complete, entropy: {entropy_after}", file=sys.stderr, flush=True)
 
         # Convert to bytes
+        print(f"📦 [ENCRYPT] Converting to bytes...", file=sys.stderr, flush=True)
         buffer = io.BytesIO()
         Image.fromarray(shifted_img).save(buffer, format='PNG')
         img_bytes = buffer.getvalue()
+        print(f"✅ [ENCRYPT] Image converted to bytes: {len(img_bytes)} bytes", file=sys.stderr, flush=True)
 
         # Generate hash for integrity
+        print(f"🔐 [ENCRYPT] Generating hash...", file=sys.stderr, flush=True)
         original_hash = get_file_hash(img_bytes)
+        print(f"✅ [ENCRYPT] Hash: {original_hash[:16]}...", file=sys.stderr, flush=True)
+        
         log_event(f"Web encryption - Image: {os.path.basename(image_path)}")
         log_event(f"Pre-encryption SHA256: {original_hash}")
+        print(f"✅ [ENCRYPT] Logged events", file=sys.stderr, flush=True)
 
         # Encrypt data
+        print(f"🔑 [ENCRYPT] Generating encryption key from PIN...", file=sys.stderr, flush=True)
         key = generate_key_from_pin(pin)
+        print(f"✅ [ENCRYPT] Key generated", file=sys.stderr, flush=True)
+        
+        print(f"🔐 [ENCRYPT] Encrypting data...", file=sys.stderr, flush=True)
         fernet = Fernet(key)
         encrypted_data = fernet.encrypt(img_bytes)
+        print(f"✅ [ENCRYPT] Data encrypted: {len(encrypted_data)} bytes", file=sys.stderr, flush=True)
 
         # Generate filename for encrypted file
         base_name = os.path.splitext(os.path.basename(image_path))[0]
@@ -80,5 +105,12 @@ def encrypt_image_web(image_path, pin):
         }
 
     except Exception as e:
-        log_event(f"Web encryption failed: {str(e)}")
+        import sys
+        error_msg = f"Web encryption failed: {str(e)}"
+        print(f"\n{'='*60}", file=sys.stderr, flush=True)
+        print(f"❌ [ENCRYPT EXCEPTION] {error_msg}", file=sys.stderr, flush=True)
+        import traceback
+        print(traceback.format_exc(), file=sys.stderr, flush=True)
+        print(f"{'='*60}\n", file=sys.stderr, flush=True)
+        log_event(error_msg)
         return {'success': False, 'error': str(e)}
