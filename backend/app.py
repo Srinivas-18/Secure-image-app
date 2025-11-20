@@ -124,25 +124,37 @@ def encrypt_route():
             print(f"❌ No 'image' in request.files. Available: {list(request.files.keys())}", file=sys.stderr, flush=True)
             return jsonify({'error': 'No image file provided'}), 400
         
+        print(f"✅ Found 'image' in request.files", file=sys.stderr, flush=True)
+        
         file = request.files['image']
         pin = request.form.get('pin')
         
+        print(f"📝 File details - filename: {file.filename}, content_type: {file.content_type}", file=sys.stderr, flush=True)
+        print(f"📝 PIN received: {'Yes' if pin else 'No'} (length: {len(pin) if pin else 0})", file=sys.stderr, flush=True)
+        
         if file.filename == '':
+            print(f"❌ Empty filename", file=sys.stderr, flush=True)
             return jsonify({'error': 'No file selected'}), 400
         
         if not pin:
+            print(f"❌ No PIN provided", file=sys.stderr, flush=True)
             return jsonify({'error': 'PIN is required'}), 400
         
         if not allowed_file(file.filename):
+            print(f"❌ File type not allowed: {file.filename}", file=sys.stderr, flush=True)
             return jsonify({'error': 'Invalid file type. Only PNG, JPG, JPEG allowed'}), 400
         
         # Save uploaded file temporarily
         filename = secure_filename(file.filename)
         temp_path = os.path.join(UPLOAD_FOLDER, filename)
+        print(f"💾 Saving to: {temp_path}", file=sys.stderr, flush=True)
         file.save(temp_path)
+        print(f"✅ File saved successfully", file=sys.stderr, flush=True)
         
         # Encrypt the image
+        print(f"🔐 Starting encryption...", file=sys.stderr, flush=True)
         result = encrypt_image_web(temp_path, pin)
+        print(f"✅ Encryption completed. Success: {result.get('success')}", file=sys.stderr, flush=True)
         
         # Clean up original file
         if os.path.exists(temp_path):
@@ -166,9 +178,8 @@ def encrypt_route():
         print(f"{'='*60}", file=sys.stderr, flush=True)
         print(error_details, file=sys.stderr, flush=True)
         print(f"{'='*60}\n", file=sys.stderr, flush=True)
-        log_event(error_msg)
-        log_event(f"Error traceback: {error_details}")
-        return jsonify({'error': f'Encryption failed: {str(e)}', 'details': error_details}), 500
+        # Don't call log_event here as it might cause secondary errors
+        return jsonify({'error': f'Encryption failed: {str(e)}'}), 500
 
 @app.route('/decrypt', methods=['POST'])
 def decrypt_route():
