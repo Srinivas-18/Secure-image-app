@@ -159,15 +159,13 @@ def encrypt_route():
             return jsonify({'error': result['error']}), 500
             
     except Exception as e:
-        import traceback
-        import sys
         error_details = traceback.format_exc()
         error_msg = f"Encryption error: {str(e)}"
-        print(f"\n{'='*60}", file=sys.stderr)
-        print(f"❌ {error_msg}", file=sys.stderr)
-        print(f"{'='*60}", file=sys.stderr)
-        print(error_details, file=sys.stderr)
-        print(f"{'='*60}\n", file=sys.stderr)
+        print(f"\n{'='*60}", file=sys.stderr, flush=True)
+        print(f"❌ {error_msg}", file=sys.stderr, flush=True)
+        print(f"{'='*60}", file=sys.stderr, flush=True)
+        print(error_details, file=sys.stderr, flush=True)
+        print(f"{'='*60}\n", file=sys.stderr, flush=True)
         log_event(error_msg)
         log_event(f"Error traceback: {error_details}")
         return jsonify({'error': f'Encryption failed: {str(e)}', 'details': error_details}), 500
