@@ -23,10 +23,14 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-change-this')
 CORS(app, origins=[
     "http://localhost:3000", 
     "http://localhost:5000",
+    "http://localhost:8000",
     "http://127.0.0.1:5000",
+    "http://127.0.0.1:8000",
+    "http://10.2.18.108:8000",  # Your LAN IP
     "https://srinivas-18.github.io",
     "https://srinivas-18.github.io/Secure-image-app/",
-    "https://srinivas-18.github.io/Secure-image-app",  # Without trailing slash
+    "https://srinivas-18.github.io/Secure-image-app",
+    "https://secure-image-app-33hz.vercel.app",  # Your Vercel deployment
     "https://*.vercel.app",
     "https://*.netlify.app",
     "*"  # Allow all origins for development - remove in production
