@@ -821,12 +821,12 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
         import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyBV-zAo0GNgna_KmAvwqbi7XCEf4J0dMTU",
-            authDomain: "image-encryption1.vercel.app",
+            authDomain: "image-encryption-93417.firebaseapp.com",
             projectId: "image-encryption-93417",
             storageBucket: "image-encryption-93417.appspot.com",
             messagingSenderId: "1003767052492",
@@ -840,15 +840,60 @@
         class AuthManager {
             constructor() {
                 this.currentUser = null;
+                this.isProcessingRedirect = false;
+                this.authInitialized = false;
+                this.isLoggingIn = false; // Prevent double-clicks
                 this.init();
             }
 
-            init() {
+            async init() {
+                // Enable persistence FIRST before any auth operations
+                try {
+                    await setPersistence(auth, browserLocalPersistence);
+                    console.log('✅ Persistence enabled');
+                } catch (error) {
+                    console.error('❌ Persistence error:', error);
+                }
+
+                // Handle redirect result (for Google login in WebView)
+                try {
+                    this.isProcessingRedirect = true;
+                    const result = await getRedirectResult(auth);
+                    if (result && result.user) {
+                        console.log('✅ Redirect result detected:', result.user.email);
+                        await this.createUserProfile(result.user);
+                        this.showMessage('✅ Login successful!', 'success');
+                    }
+                } catch (error) {
+                    if (error.code !== 'auth/null-user') {
+                        console.error('❌ Redirect error:', error);
+                        this.showMessage(`❌ Login error: ${error.message}`, 'error');
+                    }
+                } finally {
+                    this.isProcessingRedirect = false;
+                }
+
+                // Set up auth state listener
                 onAuthStateChanged(auth, (user) => {
+                    console.log('🔄 Auth state changed:', user ? `✅ ${user.email}` : '❌ logged out');
                     this.currentUser = user;
+                    this.authInitialized = true;
                     this.updateUI();
                 });
+
                 this.setupEventListeners();
+            }
+
+            async createUserProfile(user) {
+                try {
+                    await setDoc(doc(db, 'users', user.uid), {
+                        email: user.email,
+                        createdAt: new Date(),
+                        encryptionCount: 0
+                    }, { merge: true });
+                } catch (error) {
+                    console.warn('Firestore profile creation failed:', error);
+                }
             }
 
             setupEventListeners() {
@@ -874,15 +919,7 @@
                     
                     try {
                         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                        try {
-                            await setDoc(doc(db, 'users', userCredential.user.uid), {
-                                email: userCredential.user.email,
-                                createdAt: new Date(),
-                                encryptionCount: 0
-                            });
-                        } catch (firestoreError) {
-                            console.warn('Firestore profile creation failed:', firestoreError);
-                        }
+                        await this.createUserProfile(userCredential.user);
                         this.showMessage('✅ Registration successful!', 'success');
                     } catch (error) {
                         this.showMessage(`❌ Registration failed: ${error.message}`, 'error');
@@ -891,21 +928,62 @@
 
                 // Google login buttons
                 const handleGoogleLogin = async () => {
+                    // Prevent multiple simultaneous login attempts
+                    if (this.isLoggingIn) {
+                        console.log('⏳ Login already in progress, please wait...');
+                        return;
+                    }
+                    
+                    this.isLoggingIn = true;
+                    const provider = new GoogleAuthProvider();
+                    provider.setCustomParameters({
+                        prompt: 'select_account'
+                    });
+                    
                     try {
-                        const provider = new GoogleAuthProvider();
-                        const userCredential = await signInWithPopup(auth, provider);
-                        try {
-                            await setDoc(doc(db, 'users', userCredential.user.uid), {
-                                email: userCredential.user.email,
-                                createdAt: new Date(),
-                                encryptionCount: 0
-                            }, { merge: true });
-                        } catch (firestoreError) {
-                            console.warn('Firestore profile creation failed:', firestoreError);
+                        // Detect if running in WebView/embedded browser
+                        const isWebView = /wv|WebView|Android.*Version\/[\d.]+.*Safari/i.test(navigator.userAgent);
+                        
+                        if (isWebView) {
+                            // Use redirect for WebView (Android APK)
+                            console.log('📱 Using redirect for WebView');
+                            await signInWithRedirect(auth, provider);
+                        } else {
+                            // Use popup for normal browsers
+                            console.log('🌐 Using popup for browser');
+                            console.log('🔵 Opening popup...');
+                            const result = await signInWithPopup(auth, provider);
+                            console.log('🟢 Popup returned with result:', result);
+                            console.log('✅ Popup login successful:', result.user.email);
+                            console.log('👤 User UID:', result.user.uid);
+                            await this.createUserProfile(result.user);
+                            console.log('💾 User profile created');
+                            this.showMessage('✅ Google login successful!', 'success');
                         }
-                        this.showMessage('✅ Google login successful!', 'success');
                     } catch (error) {
-                        this.showMessage(`❌ Google login failed: ${error.message}`, 'error');
+                        console.error('❌ Google login error:', error);
+                        console.error('❌ Error code:', error.code);
+                        console.error('❌ Error message:', error.message);
+                        
+                        // Ignore cancelled popup errors (user closed popup or double-clicked)
+                        if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+                            console.log('ℹ️ Popup cancelled - this is normal if you clicked twice or closed the popup');
+                        } else if (error.code === 'auth/popup-blocked') {
+                            console.log('🔄 Popup blocked, falling back to redirect');
+                            try {
+                                await signInWithRedirect(auth, provider);
+                            } catch (redirectError) {
+                                console.error('❌ Redirect error:', redirectError);
+                                this.showMessage(`❌ Google login failed: ${redirectError.message}`, 'error');
+                            }
+                        } else {
+                            this.showMessage(`❌ Google login failed: ${error.message}`, 'error');
+                        }
+                    } finally {
+                        // Reset the login flag after a short delay
+                        setTimeout(() => {
+                            this.isLoggingIn = false;
+                        }, 1000);
                     }
                 };
 
@@ -1094,23 +1172,35 @@
                 const userInfo = document.getElementById('userInfo');
 
                 if (this.currentUser) {
+                    // User is logged in - show app, hide auth
+                    console.log('✅ Showing app for user:', this.currentUser.email);
                     authContainer.style.display = 'none';
                     appContainer.style.display = 'block';
                     userInfo.innerHTML = `
                         <span>Welcome, ${this.currentUser.email}</span>
                         <button id="logoutBtn" class="btn btn-secondary">Logout</button>
                     `;
-                    document.getElementById('logoutBtn').addEventListener('click', async () => {
-                        try {
-                            await signOut(auth);
-                            this.showMessage('✅ Logged out successfully!', 'success');
-                        } catch (error) {
-                            this.showMessage(`❌ Logout failed: ${error.message}`, 'error');
-                        }
-                    });
+                    
+                    // Attach logout handler (remove old listener first)
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.onclick = async () => {
+                            try {
+                                console.log('🔒 Logging out...');
+                                await signOut(auth);
+                                this.showMessage('✅ Logged out successfully!', 'success');
+                            } catch (error) {
+                                console.error('❌ Logout error:', error);
+                                this.showMessage(`❌ Logout failed: ${error.message}`, 'error');
+                            }
+                        };
+                    }
                 } else {
+                    // User is logged out - show auth, hide app
+                    console.log('❌ Showing login form');
                     authContainer.style.display = 'flex';
                     appContainer.style.display = 'none';
+                    userInfo.innerHTML = '';
                 }
             }
 
@@ -1189,6 +1279,7 @@
             }
         }
 
+        // Initialize AuthManager when DOM is ready
         new AuthManager();
 
         // Password toggle function
