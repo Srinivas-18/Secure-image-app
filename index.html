@@ -3,206 +3,355 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔐 Secure Image Encryption</title>
+    <title>🔐 Secure Image Encryption | Military-Grade Security</title>
     <style>
-        * {
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+            --shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+            --shadow-lg: 0 10px 40px rgba(15, 23, 42, 0.12);
+            --radius: 12px;
+            --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            --gradient-dark: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 16px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
+        /* Hero Section */
+        .hero {
+            background: var(--gradient-primary);
+            color: #fff;
+            text-align: center;
+            padding: 80px 24px 120px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></svg>') repeat;
+            opacity: 0.3;
+        }
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-icon {
+            font-size: 4rem;
+            margin-bottom: 24px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .hero-title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 620px;
+            margin: 0 auto 32px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        .hero-features {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .hero-feature::before {
+            content: '✓';
+            font-weight: bold;
+            background: rgba(255,255,255,0.2);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
+        /* Container */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 24px 48px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            color: white;
-        }
-
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
+        /* Main Content */
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 28px;
+            margin-top: -60px;
+            position: relative;
+            z-index: 10;
+            margin-bottom: 48px;
         }
 
+        /* Section Cards */
         .section {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
         }
-
         .section:hover {
-            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
         }
-
         .section h2 {
-            color: #4a5568;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
+            color: var(--text);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+        .section h2 .icon {
+            font-size: 1.4em;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
+        /* Forms */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #4a5568;
+            color: var(--text);
+            font-size: 0.95rem;
         }
-
         .form-group input[type="file"],
-        .form-group input[type="password"] {
+        .form-group input[type="password"],
+        .form-group input[type="email"],
+        .form-group input[type="text"] {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
             border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
+            font-size: 15px;
+            background: #fff;
+            transition: all 0.2s ease;
+            font-family: inherit;
         }
-
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
+        /* Buttons */
         .btn {
-            padding: 12px 24px;
+            padding: 12px 28px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .btn-info {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .auth-container {
-            display: flex;
-            justify-content: center;
+            transition: all 0.2s ease;
+            display: inline-flex;
             align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: #fff;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+        }
+        .btn-secondary {
+            background: var(--gradient-dark);
+            color: #fff;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(30, 41, 59, 0.3);
+        }
+        .btn-info {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: #fff;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-info:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.3);
+        }
+        .btn-google {
+            background: #fff;
+            color: var(--text);
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            margin-top: 12px;
+        }
+        .btn-google:hover {
+            background: #f8fafc;
+            border-color: var(--primary-light);
         }
 
+        /* Auth Container */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: var(--bg);
+        }
         .auth-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: var(--card-bg);
+            padding: 48px 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
+            border: 1px solid var(--border);
+        }
+        .auth-card h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
             text-align: center;
         }
-
-        .auth-section h2 {
-            margin-bottom: 1.5rem;
-            color: #333;
+        .auth-card > p {
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            text-align: center;
         }
-
+        .auth-section h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         .auth-section input {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 1rem;
-            border: 2px solid #e1e5e9;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            border: 2px solid var(--border);
             border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
+            font-size: 15px;
+            font-family: inherit;
         }
-
         .auth-section input:focus {
             outline: none;
-            border-color: #007bff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-
         .auth-section a {
-            color: #007bff;
+            color: var(--primary);
             text-decoration: none;
-            font-size: 14px;
+            font-weight: 500;
         }
-
         .auth-section a:hover {
             text-decoration: underline;
         }
 
+        /* User Info */
         .user-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #f8f9fa;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            font-weight: 500;
+            border: 1px solid var(--border);
         }
 
+        /* Messages */
         .message {
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 1rem;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-weight: 500;
+            border-left: 4px solid;
         }
-
         .message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #d1fae5;
+            color: #065f46;
+            border-color: var(--success);
         }
-
         .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: var(--error);
         }
 
+        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -211,306 +360,323 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
         }
-
         .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 30px;
-            border-radius: 15px;
+            background: var(--card-bg);
+            margin: 8% auto;
+            padding: 32px;
+            border-radius: var(--radius);
             width: 90%;
             max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
             position: relative;
         }
-
+        .modal-content h3 {
+            margin-top: 0;
+            color: var(--text);
+        }
         .close {
-            color: #aaa;
-            float: right;
+            position: absolute;
+            right: 20px;
+            top: 16px;
             font-size: 28px;
             font-weight: bold;
+            color: var(--text-muted);
             cursor: pointer;
-            position: absolute;
-            right: 15px;
-            top: 10px;
+            transition: color 0.2s;
+        }
+        .close:hover {
+            color: var(--text);
         }
 
-        .close:hover,
-        .close:focus {
-            color: #000;
-            text-decoration: none;
-        }
-
-        .log-content {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .btn-google {
-            background: #4285f4;
-            color: white;
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .btn-google:hover {
-            background: #357ae8;
-        }
-
+        /* File Info */
         .file-info {
             margin-top: 8px;
-            padding: 8px;
-            background: #f7fafc;
-            border-radius: 4px;
+            padding: 10px 12px;
+            background: #f1f5f9;
+            border-radius: 6px;
             font-size: 14px;
-            color: #718096;
+            color: var(--text-muted);
+            border-left: 3px solid var(--primary);
         }
 
+        /* PIN Strength */
         .pin-strength {
             margin-top: 8px;
-            padding: 8px;
-            border-radius: 4px;
+            padding: 10px 12px;
+            border-radius: 6px;
             font-weight: 600;
             font-size: 14px;
         }
+        .pin-strength.weak { background: #fee2e2; color: #991b1b; }
+        .pin-strength.medium { background: #fef3c7; color: #92400e; }
+        .pin-strength.strong { background: #d1fae5; color: #065f46; }
 
-        .pin-strength.weak {
-            background: #fed7d7;
-            color: #c53030;
-        }
-
-        .pin-strength.medium {
-            background: #feebc8;
-            color: #dd6b20;
-        }
-
-        .pin-strength.strong {
-            background: #c6f6d5;
-            color: #38a169;
-        }
-
+        /* Results */
         .result-section {
             margin-top: 20px;
-            padding: 15px;
+            padding: 16px 18px;
             border-radius: 8px;
             display: none;
+            border-left: 4px solid;
         }
-
         .result-section.success {
-            background: #c6f6d5;
-            border: 1px solid #38a169;
-            color: #22543d;
+            background: #d1fae5;
+            color: #065f46;
+            border-color: var(--success);
         }
-
         .result-section.error {
-            background: #fed7d7;
-            border: 1px solid #e53e3e;
-            color: #742a2a;
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: var(--error);
         }
 
+        /* Stats */
         .stats-section {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+            margin-bottom: 32px;
+            border: 1px solid var(--border);
         }
-
+        .stats-section h3 {
+            margin: 0 0 20px 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-top: 20px;
         }
-
         .stat-card {
-            background: #f7fafc;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             padding: 20px;
             border-radius: 10px;
-            text-align: center;
+            border: 1px solid var(--border);
         }
-
         .stat-card h4 {
-            color: #4a5568;
-            margin-bottom: 15px;
+            margin: 0 0 12px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
         }
-
         .stat-values {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
-
         .stat-values span {
-            padding: 8px;
-            background: white;
-            border-radius: 5px;
+            padding: 10px 12px;
+            background: #fff;
+            border-radius: 6px;
             font-weight: 600;
+            border: 1px solid var(--border);
         }
 
+        /* Tables */
+        .log-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
         .log-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 16px;
         }
-
         .log-table th,
         .log-table td {
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid var(--border);
         }
-
         .log-table th {
-            background: #f7fafc;
+            background: #f8fafc;
             font-weight: 600;
-            color: #4a5568;
+            color: var(--text);
         }
-
         .log-table tr:hover {
-            background: #f7fafc;
+            background: #f8fafc;
         }
 
+        /* Spinner */
         .spinner {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(4px);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            color: white;
         }
-
         .spinner-circle {
             width: 50px;
             height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
+            border: 5px solid var(--border);
+            border-top: 5px solid var(--primary);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
         }
-
+        .spinner p {
+            color: var(--text);
+            font-weight: 600;
+        }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
+        /* Image Preview */
         .image-preview {
             max-width: 100%;
             max-height: 300px;
             border-radius: 8px;
-            margin: 15px 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin: 16px 0;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
         }
 
+        /* Download Link */
         .download-link {
             display: inline-block;
-            margin-top: 15px;
+            margin: 8px 8px 8px 0;
             padding: 10px 20px;
-            background: #48bb78;
-            color: white;
+            background: var(--success);
+            color: #fff;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
         }
-
         .download-link:hover {
-            background: #38a169;
+            background: #059669;
             transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
         }
 
-        @media (max-width: 768px) {
+        /* Footer */
+        footer {
+            background: var(--gradient-dark);
+            color: rgba(255,255,255,0.9);
+            text-align: center;
+            padding: 40px 24px;
+            margin-top: 64px;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hero-title { font-size: 2.2rem; }
+            .hero-subtitle { font-size: 1.1rem; }
             .main-content {
                 grid-template-columns: 1fr;
                 gap: 20px;
+                margin-top: -40px;
             }
-            
-            .container {
-                padding: 15px;
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
-            
-            header h1 {
-                font-size: 2em;
-            }
+        }
+        @media (max-width: 600px) {
+            .hero { padding: 60px 20px 100px; }
+            .hero-title { font-size: 1.8rem; }
+            .hero-subtitle { font-size: 1rem; }
+            .section { padding: 24px 20px; }
+            .auth-card { padding: 32px 24px; }
         }
     </style>
 </head>
 <body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-icon">🔐</div>
+            <h1 class="hero-title">Secure Image Encryption</h1>
+            <p class="hero-subtitle">Protect your sensitive images with military-grade encryption. Fast, secure, and privacy first trusted by professionals worldwide.</p>
+            <div class="hero-features">
+                <div class="hero-feature">AES-256 Encryption</div>
+                <div class="hero-feature">Zero Data Storage</div>
+                <div class="hero-feature">Instant Processing</div>
+            </div>
+        </div>
+    </section>
+
     <!-- Authentication Container -->
     <div id="authContainer" class="auth-container">
         <div class="auth-card">
-            <h1>🔐 Secure Image Encryption</h1>
-            <p>Please login to access the encryption service</p>
-            
+            <h1>Sign In</h1>
+            <p>Access your account to use the encryption service</p>
             <div id="authMessage" class="message" style="display: none;"></div>
             
             <!-- Login Section -->
             <div id="loginSection" class="auth-section">
-                <h2>Login</h2>
+                <h2><span class="icon">🔑</span> Login</h2>
                 <form id="loginForm">
-                    <div class="form-group">
-                        <input type="email" id="loginEmail" placeholder="Email" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="loginPassword" placeholder="Password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                    <button type="button" id="googleLoginBtn" class="btn btn-google">Login with Google</button>
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                    <button type="button" id="googleLoginBtn" class="btn btn-google" style="width: 100%;">
+                        <span>🌐</span> Sign in with Google
+                    </button>
                 </form>
-                <p><a href="#" id="showRegister">Don't have an account? Register</a></p>
+                <p style="margin-top:16px; text-align:center;">
+                    <a href="#" id="showRegister">Don't have an account? Register</a>
+                </p>
             </div>
             
             <!-- Register Section -->
             <div id="registerSection" class="auth-section" style="display: none;">
-                <h2>Register</h2>
+                <h2><span class="icon">📝</span> Register</h2>
                 <form id="registerForm">
-                    <div class="form-group">
-                        <input type="email" id="registerEmail" placeholder="Email" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="registerPassword" placeholder="Password (min 6 characters)" required minlength="6">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Register</button>
-                    <button type="button" id="googleRegisterBtn" class="btn btn-google">Register with Google</button>
+                    <input type="email" id="registerEmail" placeholder="Email" required>
+                    <input type="password" id="registerPassword" placeholder="Password (min 6 characters)" required minlength="6">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+                    <button type="button" id="googleRegisterBtn" class="btn btn-google" style="width: 100%;">
+                        <span>🌐</span> Sign up with Google
+                    </button>
                 </form>
-                <p><a href="#" id="showLogin">Already have an account? Login</a></p>
+                <p style="margin-top:16px; text-align:center;">
+                    <a href="#" id="showLogin">Already have an account? Login</a>
+                </p>
             </div>
         </div>
     </div>
 
     <!-- Main Application Container -->
     <div id="appContainer" class="container" style="display: none;">
-        <header>
-            <h1>🔐 Secure Image Encryption</h1>
-            <div id="userInfo" class="user-info"></div>
-            <p>Encrypt and decrypt your images with military-grade security</p>
-        </header>
+        <div id="userInfo" class="user-info" style="margin-top: -100px; margin-bottom: 120px; position: relative; z-index: 20;"></div>
 
         <div class="main-content">
             <!-- Encryption Section -->
             <div class="section">
-                <h2>📤 Encrypt Image</h2>
+                <h2><span class="icon">📤</span> Encrypt Image</h2>
                 <form id="encryptForm" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="imageFile">Select Image:</label>
                         <input type="file" id="imageFile" name="image" accept=".png,.jpg,.jpeg" required>
-                        <div class="file-info" id="imageInfo"></div>
+                        <div class="file-info" id="imageInfo" style="display:none;"></div>
                     </div>
                     
                     <div class="form-group">
                         <label for="encryptPin">Encryption PIN:</label>
                         <input type="password" id="encryptPin" name="pin" placeholder="Enter secure PIN" required>
-                        <div class="pin-strength" id="pinStrength"></div>
+                        <div class="pin-strength" id="pinStrength" style="display:none;"></div>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary">🔒 Encrypt Image</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        🔒 Encrypt Image
+                    </button>
                 </form>
                 
                 <div id="encryptResult" class="result-section"></div>
@@ -518,18 +684,18 @@
 
             <!-- Decryption Section -->
             <div class="section">
-                <h2>📥 Decrypt Image</h2>
+                <h2><span class="icon">📥</span> Decrypt Image</h2>
                 <form id="decryptForm" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="encryptedFile">Select Encrypted File:</label>
                         <input type="file" id="encryptedFile" name="encrypted_file" accept=".enc" required>
-                        <div class="file-info" id="encryptedInfo"></div>
+                        <div class="file-info" id="encryptedInfo" style="display:none;"></div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="metaFile">Select Hash File (optional for integrity check):</label>
+                        <label for="metaFile">Hash File (optional):</label>
                         <input type="file" id="metaFile" name="meta_file" accept=".meta">
-                        <div class="file-info" id="metaInfo"></div>
+                        <div class="file-info" id="metaInfo" style="display:none;"></div>
                     </div>
                     
                     <div class="form-group">
@@ -537,7 +703,9 @@
                         <input type="password" id="decryptPin" name="pin" placeholder="Enter PIN" required>
                     </div>
                     
-                    <button type="submit" class="btn btn-secondary">🔓 Decrypt Image</button>
+                    <button type="submit" class="btn btn-secondary" style="width: 100%;">
+                        🔓 Decrypt Image
+                    </button>
                 </form>
                 
                 <div id="decryptResult" class="result-section"></div>
@@ -567,36 +735,43 @@
 
         <!-- Activity Log Section -->
         <div class="section">
-            <h2>📋 Activity Logs</h2>
-            <button id="viewLogsBtn" class="btn btn-info">View Activity Log</button>
+            <h2><span class="icon">📋</span> Activity Logs</h2>
+            <button id="viewLogsBtn" class="btn btn-info">
+                📄 View Activity Log
+            </button>
         </div>
+    </div>
 
-        <!-- Log Authentication Modal -->
-        <div id="logModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h3>🔐 Log Access Authentication</h3>
-                <form id="logAuthForm">
-                    <div class="form-group">
-                        <label for="logUsername">Username:</label>
-                        <input type="text" id="logUsername" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="logPassword">Password:</label>
-                        <input type="password" id="logPassword" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </form>
-            </div>
+    <!-- Footer -->
+    <footer>
+        &copy; 2025 Secure Image Encryption &mdash; Built for privacy, security, and peace of mind.
+    </footer>
+
+    <!-- Log Authentication Modal -->
+    <div id="logModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>🔐 Log Access Authentication</h3>
+            <form id="logAuthForm">
+                <div class="form-group">
+                    <label for="logUsername">Username:</label>
+                    <input type="text" id="logUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="logPassword">Password:</label>
+                    <input type="password" id="logPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
         </div>
+    </div>
 
-        <!-- Log Display Modal -->
-        <div id="logDisplayModal" class="modal">
-            <div class="modal-content log-content">
-                <span class="close">&times;</span>
-                <h3>📋 Activity Log</h3>
-                <div id="logDisplay"></div>
-            </div>
+    <!-- Log Display Modal -->
+    <div id="logDisplayModal" class="modal">
+        <div class="modal-content log-content">
+            <span class="close">&times;</span>
+            <h3>📋 Activity Log</h3>
+            <div id="logDisplay"></div>
         </div>
     </div>
 
@@ -608,12 +783,10 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        // Import Firebase functions
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
-        import { getFirestore, collection, addDoc, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+        import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 
-        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyBV-zAo0GNgna_KmAvwqbi7XCEf4J0dMTU",
             authDomain: "image-encryption-93417.firebaseapp.com",
@@ -623,85 +796,10 @@
             appId: "1:1003767052492:web:bc0cdf250486376052ea69"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        
-        // Allow localhost in development
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            auth.settings.appVerificationDisabledForTesting = true;
-        }
 
-        // Authentication functions
-        const loginUser = async (email, password) => {
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                return { success: true, user: userCredential.user };
-            } catch (error) {
-                console.error('Login error:', error);
-                return { success: false, error: error.message };
-            }
-        };
-
-        const registerUser = async (email, password) => {
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                try {
-                    await setDoc(doc(db, 'users', userCredential.user.uid), {
-                        email: userCredential.user.email,
-                        createdAt: new Date(),
-                        encryptionCount: 0
-                    });
-                } catch (firestoreError) {
-                    console.warn('Firestore profile creation failed:', firestoreError);
-                }
-                return { success: true, user: userCredential.user };
-            } catch (error) {
-                console.error('Registration error:', error);
-                return { success: false, error: error.message };
-            }
-        };
-
-        const loginWithGoogle = async () => {
-            try {
-                const provider = new GoogleAuthProvider();
-                provider.setCustomParameters({
-                    prompt: 'select_account'
-                });
-                
-                // Use redirect instead of popup to avoid COOP issues
-                const userCredential = await signInWithPopup(auth, provider);
-                try {
-                    await setDoc(doc(db, 'users', userCredential.user.uid), {
-                        email: userCredential.user.email,
-                        createdAt: new Date(),
-                        encryptionCount: 0
-                    }, { merge: true });
-                } catch (firestoreError) {
-                    console.warn('Firestore profile creation failed:', firestoreError);
-                }
-                return { success: true, user: userCredential.user };
-            } catch (error) {
-                console.error('Google login error:', error);
-                // If popup fails, suggest redirect method
-                if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
-                    return { success: false, error: 'Popup blocked. Please disable popup blocker or use email login.' };
-                }
-                return { success: false, error: error.message };
-            }
-        };
-
-        const logoutUser = async () => {
-            try {
-                await signOut(auth);
-                return { success: true };
-            } catch (error) {
-                return { success: false, error: error.message };
-            }
-        };
-
-        // Auth Manager Class
         class AuthManager {
             constructor() {
                 this.currentUser = null;
@@ -717,19 +815,17 @@
             }
 
             setupEventListeners() {
-                const self = this;
-                
                 // Login form
                 document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const email = document.getElementById('loginEmail').value;
                     const password = document.getElementById('loginPassword').value;
                     
-                    const result = await loginUser(email, password);
-                    if (result.success) {
-                        self.showMessage('✅ Login successful!', 'success');
-                    } else {
-                        self.showMessage(`❌ Login failed: ${result.error}`, 'error');
+                    try {
+                        await signInWithEmailAndPassword(auth, email, password);
+                        this.showMessage('✅ Login successful!', 'success');
+                    } catch (error) {
+                        this.showMessage(`❌ Login failed: ${error.message}`, 'error');
                     }
                 });
 
@@ -739,33 +835,45 @@
                     const email = document.getElementById('registerEmail').value;
                     const password = document.getElementById('registerPassword').value;
                     
-                    const result = await registerUser(email, password);
-                    if (result.success) {
-                        self.showMessage('✅ Registration successful!', 'success');
-                    } else {
-                        self.showMessage(`❌ Registration failed: ${result.error}`, 'error');
+                    try {
+                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                        try {
+                            await setDoc(doc(db, 'users', userCredential.user.uid), {
+                                email: userCredential.user.email,
+                                createdAt: new Date(),
+                                encryptionCount: 0
+                            });
+                        } catch (firestoreError) {
+                            console.warn('Firestore profile creation failed:', firestoreError);
+                        }
+                        this.showMessage('✅ Registration successful!', 'success');
+                    } catch (error) {
+                        this.showMessage(`❌ Registration failed: ${error.message}`, 'error');
                     }
                 });
 
-                // Google login button
-                document.getElementById('googleLoginBtn')?.addEventListener('click', async () => {
-                    const result = await loginWithGoogle();
-                    if (result.success) {
-                        self.showMessage('✅ Google login successful!', 'success');
-                    } else {
-                        self.showMessage(`❌ Google login failed: ${result.error}`, 'error');
+                // Google login buttons
+                const handleGoogleLogin = async () => {
+                    try {
+                        const provider = new GoogleAuthProvider();
+                        const userCredential = await signInWithPopup(auth, provider);
+                        try {
+                            await setDoc(doc(db, 'users', userCredential.user.uid), {
+                                email: userCredential.user.email,
+                                createdAt: new Date(),
+                                encryptionCount: 0
+                            }, { merge: true });
+                        } catch (firestoreError) {
+                            console.warn('Firestore profile creation failed:', firestoreError);
+                        }
+                        this.showMessage('✅ Google login successful!', 'success');
+                    } catch (error) {
+                        this.showMessage(`❌ Google login failed: ${error.message}`, 'error');
                     }
-                });
+                };
 
-                // Google register button
-                document.getElementById('googleRegisterBtn')?.addEventListener('click', async () => {
-                    const result = await loginWithGoogle();
-                    if (result.success) {
-                        self.showMessage('✅ Google registration successful!', 'success');
-                    } else {
-                        self.showMessage(`❌ Google registration failed: ${result.error}`, 'error');
-                    }
-                });
+                document.getElementById('googleLoginBtn')?.addEventListener('click', handleGoogleLogin);
+                document.getElementById('googleRegisterBtn')?.addEventListener('click', handleGoogleLogin);
 
                 // Toggle between login/register
                 document.getElementById('showRegister')?.addEventListener('click', (e) => {
@@ -780,11 +888,6 @@
                     document.getElementById('loginSection').style.display = 'block';
                 });
 
-                // View Logs button
-                document.getElementById('viewLogsBtn')?.addEventListener('click', () => {
-                    document.getElementById('logModal').style.display = 'block';
-                });
-
                 // Modal close buttons
                 document.querySelectorAll('.close').forEach(closeBtn => {
                     closeBtn.addEventListener('click', (e) => {
@@ -792,151 +895,119 @@
                     });
                 });
 
-                // Close modal when clicking outside
                 window.addEventListener('click', (e) => {
                     if (e.target.classList.contains('modal')) {
                         e.target.style.display = 'none';
                     }
                 });
 
-                // Log authentication form
+                // View Logs button
+                document.getElementById('viewLogsBtn')?.addEventListener('click', () => {
+                    document.getElementById('logModal').style.display = 'block';
+                });
+
+                // Log authentication
                 document.getElementById('logAuthForm')?.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const username = document.getElementById('logUsername').value;
                     const password = document.getElementById('logPassword').value;
                     
                     try {
-                        const response = await fetch(`${self.getApiUrl()}/authenticate_logs`, {
+                        const response = await fetch(`${this.getApiUrl()}/authenticate_logs`, {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ username, password })
                         });
-
                         const data = await response.json();
 
                         if (data.success) {
                             document.getElementById('logModal').style.display = 'none';
                             document.getElementById('logDisplayModal').style.display = 'block';
-                            await self.loadActivityLogs();
+                            await this.loadActivityLogs();
                         } else {
-                            self.showMessage('❌ Invalid credentials for log access', 'error');
+                            this.showMessage('❌ Invalid credentials', 'error');
                         }
                     } catch (error) {
-                        self.showMessage('❌ Authentication error', 'error');
+                        this.showMessage('❌ Authentication error', 'error');
                     }
                 });
 
-                // Encryption form handler
+                // Encryption form
                 document.getElementById('encryptForm')?.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    
                     const formData = new FormData(e.target);
-                    const file = document.getElementById('imageFile').files[0];
-                    const pin = document.getElementById('encryptPin').value;
-
-                    if (!file || !pin) {
-                        self.showResult('encryptResult', '❌ Please select an image and enter a PIN.', false);
-                        return;
-                    }
-
-                    self.showLoading();
-                    self.hideResult('encryptResult');
+                    
+                    this.showLoading();
+                    this.hideResult('encryptResult');
 
                     try {
-                        const response = await fetch(`${self.getApiUrl()}/encrypt`, {
+                        const response = await fetch(`${this.getApiUrl()}/encrypt`, {
                             method: 'POST',
                             body: formData
                         });
 
-                        if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                        }
-
                         const data = await response.json();
-                        self.hideLoading();
+                        this.hideLoading();
 
                         if (data.success) {
-                            self.showResult('encryptResult', `
+                            this.showResult('encryptResult', `
                                 ✅ <strong>Encryption Successful!</strong><br>
                                 📁 Encrypted file: ${data.encrypted_filename}<br>
                                 🔑 Hash file: ${data.meta_filename}<br>
                                 <div style="margin-top: 15px;">
-                                    <a href="${self.getApiUrl()}/download/${data.encrypted_filename}" class="download-link">📥 Download Encrypted File</a>
-                                    <a href="${self.getApiUrl()}/download/${data.meta_filename}" class="download-link" style="margin-left: 10px;">📄 Download Hash File</a>
-                                </div>
-                                <div style="margin-top: 10px; padding: 10px; background: #e6f3ff; border-radius: 5px; font-size: 14px;">
-                                    💡 <strong>Important:</strong> Keep both files together for decryption and integrity verification.<br>
-                                    🔐 <strong>Security:</strong> Don't share your PIN with anyone you don't trust completely.
+                                    <a href="${this.getApiUrl()}/download/${data.encrypted_filename}" class="download-link">📥 Download Encrypted File</a>
+                                    <a href="${this.getApiUrl()}/download/${data.meta_filename}" class="download-link">📄 Download Hash File</a>
                                 </div>
                             `);
-                            
-                            // Show statistics
-                            self.displayStats(data.stats, 'encrypt');
+                            this.displayStats(data.stats, 'encrypt');
                         } else {
-                            self.showResult('encryptResult', `❌ Encryption failed: ${data.error}`, false);
+                            this.showResult('encryptResult', `❌ Encryption failed: ${data.error}`, false);
                         }
                     } catch (error) {
-                        self.hideLoading();
-                        console.error('Encryption error:', error);
-                        self.showResult('encryptResult', `❌ Connection Error: Cannot reach backend server. Please check if the backend is running on http://localhost:5500`, false);
+                        this.hideLoading();
+                        this.showResult('encryptResult', `❌ Error: ${error.message}`, false);
                     }
                 });
 
-                // Decryption form handler
+                // Decryption form
                 document.getElementById('decryptForm')?.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    
                     const formData = new FormData(e.target);
-                    const file = document.getElementById('encryptedFile').files[0];
-                    const pin = document.getElementById('decryptPin').value;
-
-                    if (!file || !pin) {
-                        self.showResult('decryptResult', '❌ Please select an encrypted file and enter the PIN.', false);
-                        return;
-                    }
-
-                    self.showLoading();
-                    self.hideResult('decryptResult');
+                    
+                    this.showLoading();
+                    this.hideResult('decryptResult');
 
                     try {
-                        const response = await fetch(`${self.getApiUrl()}/decrypt`, {
+                        const response = await fetch(`${this.getApiUrl()}/decrypt`, {
                             method: 'POST',
                             body: formData
                         });
 
                         const data = await response.json();
-                        self.hideLoading();
+                        this.hideLoading();
 
                         if (data.success) {
-                            self.showResult('decryptResult', `
+                            this.showResult('decryptResult', `
                                 ✅ <strong>Decryption Successful!</strong><br>
                                 🖼️ Image decrypted successfully<br>
                                 ${data.stats.integrity_verified ? '✅ Integrity verified' : '⚠️ No integrity check'}
                                 <br><br>
                                 <img src="data:image/png;base64,${data.decrypted_image}" class="image-preview" alt="Decrypted Image">
                                 <br>
-                                <a href="${self.getApiUrl()}/download/${data.decrypted_filename}" class="download-link">📥 Download Decrypted Image</a>
-                                <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 5px; font-size: 14px;">
-                                    🗑️ <strong>Note:</strong> Encrypted files (.enc and .meta) have been automatically deleted.
-                                </div>
+                                <a href="${this.getApiUrl()}/download/${data.decrypted_filename}" class="download-link">📥 Download Image</a>
                             `);
-                            
-                            // Show statistics
-                            self.displayStats(data.stats, 'decrypt');
+                            this.displayStats(data.stats, 'decrypt');
                         } else {
-                            self.showResult('decryptResult', `❌ Decryption failed: ${data.error}`, false);
+                            this.showResult('decryptResult', `❌ Decryption failed: ${data.error}`, false);
                         }
                     } catch (error) {
-                        self.hideLoading();
-                        self.showResult('decryptResult', `❌ Error: ${error.message}`, false);
+                        this.hideLoading();
+                        this.showResult('decryptResult', `❌ Error: ${error.message}`, false);
                     }
                 });
 
                 // PIN strength checker
                 document.getElementById('encryptPin')?.addEventListener('input', async (e) => {
-                    e.preventDefault();
                     const pin = e.target.value;
                     const pinStrength = document.getElementById('pinStrength');
                     
@@ -946,17 +1017,11 @@
                     }
 
                     try {
-                        const response = await fetch(`${self.getApiUrl()}/check_pin_strength`, {
+                        const response = await fetch(`${this.getApiUrl()}/check_pin_strength`, {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ pin: pin })
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ pin })
                         });
-
-                        if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                        }
 
                         const data = await response.json();
                         pinStrength.textContent = `PIN Strength: ${data.strength}`;
@@ -964,56 +1029,26 @@
                         pinStrength.style.display = 'block';
                     } catch (error) {
                         console.error('Error checking PIN strength:', error);
-                        pinStrength.textContent = 'PIN Strength: Unable to check';
-                        pinStrength.className = 'pin-strength weak';
-                        pinStrength.style.display = 'block';
                     }
                 });
 
-                // File info display handlers
-                document.getElementById('imageFile')?.addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    const imageInfo = document.getElementById('imageInfo');
-                    if (file) {
-                        imageInfo.innerHTML = `
-                            <strong>Selected:</strong> ${file.name}<br>
-                            <strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB<br>
-                            <strong>Type:</strong> ${file.type}
-                        `;
-                        imageInfo.style.display = 'block';
-                    } else {
-                        imageInfo.style.display = 'none';
-                    }
-                });
+                // File info display
+                const showFileInfo = (inputId, infoId) => {
+                    document.getElementById(inputId)?.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        const infoDiv = document.getElementById(infoId);
+                        if (file) {
+                            infoDiv.innerHTML = `<strong>Selected:</strong> ${file.name}<br><strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB`;
+                            infoDiv.style.display = 'block';
+                        } else {
+                            infoDiv.style.display = 'none';
+                        }
+                    });
+                };
 
-                document.getElementById('encryptedFile')?.addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    const encryptedInfo = document.getElementById('encryptedInfo');
-                    if (file) {
-                        encryptedInfo.innerHTML = `
-                            <strong>Selected:</strong> ${file.name}<br>
-                            <strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB
-                        `;
-                        encryptedInfo.style.display = 'block';
-                    } else {
-                        encryptedInfo.style.display = 'none';
-                    }
-                });
-
-                document.getElementById('metaFile')?.addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    const metaInfo = document.getElementById('metaInfo');
-                    if (file) {
-                        metaInfo.innerHTML = `
-                            <strong>Selected:</strong> ${file.name}<br>
-                            <strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB<br>
-                            <span style="color: green;">✅ Integrity check will be performed</span>
-                        `;
-                        metaInfo.style.display = 'block';
-                    } else {
-                        metaInfo.style.display = 'none';
-                    }
-                });
+                showFileInfo('imageFile', 'imageInfo');
+                showFileInfo('encryptedFile', 'encryptedInfo');
+                showFileInfo('metaFile', 'metaInfo');
             }
 
             updateUI() {
@@ -1028,70 +1063,55 @@
                         <span>Welcome, ${this.currentUser.email}</span>
                         <button id="logoutBtn" class="btn btn-secondary">Logout</button>
                     `;
-                    // Re-attach logout listener
                     document.getElementById('logoutBtn').addEventListener('click', async () => {
-                        const result = await logoutUser();
-                        if (result.success) {
+                        try {
+                            await signOut(auth);
                             this.showMessage('✅ Logged out successfully!', 'success');
+                        } catch (error) {
+                            this.showMessage(`❌ Logout failed: ${error.message}`, 'error');
                         }
                     });
                 } else {
-                    authContainer.style.display = 'block';
+                    authContainer.style.display = 'flex';
                     appContainer.style.display = 'none';
-                    userInfo.innerHTML = '';
                 }
             }
 
             async loadActivityLogs() {
                 const logDisplay = document.getElementById('logDisplay');
-                if (logDisplay) {
-                    try {
-                        const response = await fetch(`${this.getApiUrl()}/get_logs`);
-                        const data = await response.json();
+                try {
+                    const response = await fetch(`${this.getApiUrl()}/get_logs`);
+                    const data = await response.json();
 
-                        if (data.logs && data.logs.length > 0) {
-                            let logHTML = '<div style="overflow-x: auto;"><table class="log-table">';
-                            logHTML += '<thead><tr><th>Timestamp</th><th>Event</th></tr></thead><tbody>';
-                            
-                            data.logs.forEach(row => {
-                                logHTML += `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`;
-                            });
-                            
-                            logHTML += '</tbody></table></div>';
-                            logDisplay.innerHTML = logHTML;
-                        } else {
-                            logDisplay.innerHTML = '<p>No logs available.</p>';
-                        }
-                    } catch (error) {
-                        logDisplay.innerHTML = '<p>Error loading logs from server.</p>';
-                        console.error('Error loading logs:', error);
+                    if (data.logs && data.logs.length > 0) {
+                        let logHTML = '<table class="log-table"><thead><tr><th>Timestamp</th><th>Event</th></tr></thead><tbody>';
+                        data.logs.forEach(row => {
+                            logHTML += `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`;
+                        });
+                        logHTML += '</tbody></table>';
+                        logDisplay.innerHTML = logHTML;
+                    } else {
+                        logDisplay.innerHTML = '<p>No logs available.</p>';
                     }
+                } catch (error) {
+                    logDisplay.innerHTML = '<p>Error loading logs.</p>';
                 }
             }
 
             getApiUrl() {
-                // Use localhost for local testing
                 const host = window.location.hostname;
-                const isLocalhost = host === 'localhost' || host === '127.0.0.1';
-                const isPrivateIPv4 = /^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host);
-                if (isLocalhost || isPrivateIPv4) {
+                if (host === 'localhost' || host === '127.0.0.1' || /^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host)) {
                     return `http://${host}:5500`;
                 }
                 return 'https://secure-image-app-k8rm.onrender.com';
             }
 
             showLoading() {
-                const loadingSpinner = document.getElementById('loadingSpinner');
-                if (loadingSpinner) {
-                    loadingSpinner.style.display = 'flex';
-                }
+                document.getElementById('loadingSpinner').style.display = 'flex';
             }
 
             hideLoading() {
-                const loadingSpinner = document.getElementById('loadingSpinner');
-                if (loadingSpinner) {
-                    loadingSpinner.style.display = 'none';
-                }
+                document.getElementById('loadingSpinner').style.display = 'none';
             }
 
             showResult(elementId, message, isSuccess = true) {
@@ -1117,9 +1137,7 @@
                     document.getElementById('entropyAfter').textContent = stats.entropy_after ? stats.entropy_after.toFixed(4) : '-';
                     document.getElementById('sizeBefore').textContent = stats.size_before || '-';
                     document.getElementById('sizeAfter').textContent = stats.size_after || '-';
-                    
                     statsSection.style.display = 'block';
-                    statsSection.scrollIntoView({ behavior: 'smooth' });
                 }
             }
 
@@ -1129,18 +1147,12 @@
                     messageDiv.innerHTML = message;
                     messageDiv.className = `message ${type}`;
                     messageDiv.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        messageDiv.style.display = 'none';
-                    }, 5000);
+                    setTimeout(() => { messageDiv.style.display = 'none'; }, 5000);
                 }
             }
         }
 
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new AuthManager();
-        });
+        new AuthManager();
     </script>
 </body>
 </html>
