@@ -74,8 +74,10 @@ CORS(app, origins=[
     "*"  # Allow all origins for development - remove in production
 ], supports_credentials=True)
 
-# Configuration
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+# Configuration - Use absolute path relative to project root (not backend folder)
+# This matches the path used in web_encryption.py
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+UPLOAD_FOLDER = os.path.join(ROOT_DIR, 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB
 
@@ -83,6 +85,9 @@ MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB
 try:
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     print(f"✅ Upload folder created/verified at: {UPLOAD_FOLDER}")
+    print(f"📂 Current working directory: {os.getcwd()}")
+    print(f"📂 Backend directory: {os.path.dirname(__file__)}")
+    print(f"📂 Root directory: {ROOT_DIR}")
 except Exception as e:
     print(f"⚠️ Warning: Could not create upload folder: {e}")
 
@@ -98,6 +103,7 @@ def index():
             '/check_pin_strength',
             '/encrypt',
             '/decrypt',
+            '/download/<filename>',
             '/authenticate_logs',
             '/get_logs'
         ]
@@ -165,10 +171,31 @@ def encrypt_route():
             os.remove(temp_path)
         
         if result['success']:
+            # Read encrypted file and meta file for direct download (APK compatibility)
+            encrypted_path = os.path.join(UPLOAD_FOLDER, result['encrypted_filename'])
+            meta_path = os.path.join(UPLOAD_FOLDER, result['meta_filename'])
+            
+            encrypted_data = None
+            meta_data = None
+            
+            try:
+                # Read files into memory for APK clients
+                if os.path.exists(encrypted_path):
+                    with open(encrypted_path, 'rb') as f:
+                        encrypted_data = base64.b64encode(f.read()).decode('utf-8')
+                
+                if os.path.exists(meta_path):
+                    with open(meta_path, 'r') as f:
+                        meta_data = f.read()
+            except Exception as e:
+                print(f"⚠️ Warning: Could not read files for base64 encoding: {e}", file=sys.stderr, flush=True)
+            
             return jsonify({
                 'success': True,
                 'encrypted_filename': result['encrypted_filename'],
                 'meta_filename': result['meta_filename'],
+                'encrypted_data': encrypted_data,  # Base64 for APK
+                'meta_data': meta_data,  # Hash string for APK
                 'stats': result['stats']
             })
         else:
@@ -254,11 +281,29 @@ def download_file(filename):
     try:
         # Use absolute path resolution to avoid path issues
         file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, filename))
+        
+        print(f"\n{'='*60}", file=sys.stderr, flush=True)
+        print(f"📥 DOWNLOAD REQUEST", file=sys.stderr, flush=True)
+        print(f"Requested filename: {filename}", file=sys.stderr, flush=True)
+        print(f"UPLOAD_FOLDER: {UPLOAD_FOLDER}", file=sys.stderr, flush=True)
+        print(f"Full path: {file_path}", file=sys.stderr, flush=True)
+        print(f"File exists: {os.path.exists(file_path)}", file=sys.stderr, flush=True)
+        
+        # List files in upload folder for debugging
+        if os.path.exists(UPLOAD_FOLDER):
+            files_in_folder = os.listdir(UPLOAD_FOLDER)
+            print(f"Files in upload folder: {files_in_folder}", file=sys.stderr, flush=True)
+        else:
+            print(f"❌ Upload folder doesn't exist: {UPLOAD_FOLDER}", file=sys.stderr, flush=True)
+        print(f"{'='*60}\n", file=sys.stderr, flush=True)
+        
         if os.path.exists(file_path):
             return send_file(file_path, as_attachment=True)
         else:
             return jsonify({'error': f'File not found: {file_path}'}), 404
     except Exception as e:
+        print(f"❌ Download error: {str(e)}", file=sys.stderr, flush=True)
+        print(traceback.format_exc(), file=sys.stderr, flush=True)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/logs')

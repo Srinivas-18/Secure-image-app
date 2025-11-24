@@ -1065,13 +1065,29 @@
                         this.hideLoading();
 
                         if (data.success) {
+                            let encryptedLink, metaLink;
+                            
+                            // Check if base64 data is available (APK/direct download)
+                            if (data.encrypted_data && data.meta_data) {
+                                // Create blob URLs from base64 data (works in APK)
+                                const encBlob = new Blob([Uint8Array.from(atob(data.encrypted_data), c => c.charCodeAt(0))], { type: 'application/octet-stream' });
+                                const metaBlob = new Blob([data.meta_data], { type: 'text/plain' });
+                                
+                                encryptedLink = URL.createObjectURL(encBlob);
+                                metaLink = URL.createObjectURL(metaBlob);
+                            } else {
+                                // Fallback to server download endpoint (web browsers)
+                                encryptedLink = `${this.getApiUrl()}/download/${data.encrypted_filename}`;
+                                metaLink = `${this.getApiUrl()}/download/${data.meta_filename}`;
+                            }
+                            
                             this.showResult('encryptResult', `
                                 ✅ <strong>Encryption Successful!</strong><br>
                                 📁 Encrypted file: ${data.encrypted_filename}<br>
                                 🔑 Hash file: ${data.meta_filename}<br>
                                 <div style="margin-top: 15px;">
-                                    <a href="${this.getApiUrl()}/download/${data.encrypted_filename}" class="download-link">📥 Download Encrypted File</a>
-                                    <a href="${this.getApiUrl()}/download/${data.meta_filename}" class="download-link">📄 Download Hash File</a>
+                                    <a href="${encryptedLink}" download="${data.encrypted_filename}" class="download-link">📥 Download Encrypted File</a>
+                                    <a href="${metaLink}" download="${data.meta_filename}" class="download-link">📄 Download Hash File</a>
                                 </div>
                             `);
                             this.displayStats(data.stats, 'encrypt');
