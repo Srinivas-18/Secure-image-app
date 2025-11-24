@@ -415,6 +415,28 @@
         .pin-strength.medium { background: #fef3c7; color: #92400e; }
         .pin-strength.strong { background: #d1fae5; color: #065f46; }
 
+        /* Password Toggle */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            user-select: none;
+            transition: color 0.2s;
+        }
+        .password-toggle:hover {
+            color: var(--text);
+        }
+        .password-wrapper input {
+            padding-right: 45px !important;
+        }
+
         /* Results */
         .result-section {
             margin-top: 20px;
@@ -624,7 +646,10 @@
                 <h2><span class="icon">🔑</span> Login</h2>
                 <form id="loginForm">
                     <input type="email" id="loginEmail" placeholder="Email" required>
-                    <input type="password" id="loginPassword" placeholder="Password" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="loginPassword" placeholder="Password" required>
+                        <span class="password-toggle" onclick="togglePassword('loginPassword', this)">👁️</span>
+                    </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
                     <button type="button" id="googleLoginBtn" class="btn btn-google" style="width: 100%;">
                         <span>🌐</span> Sign in with Google
@@ -640,7 +665,10 @@
                 <h2><span class="icon">📝</span> Register</h2>
                 <form id="registerForm">
                     <input type="email" id="registerEmail" placeholder="Email" required>
-                    <input type="password" id="registerPassword" placeholder="Password (min 6 characters)" required minlength="6">
+                    <div class="password-wrapper">
+                        <input type="password" id="registerPassword" placeholder="Password (min 6 characters)" required minlength="6">
+                        <span class="password-toggle" onclick="togglePassword('registerPassword', this)">👁️</span>
+                    </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
                     <button type="button" id="googleRegisterBtn" class="btn btn-google" style="width: 100%;">
                         <span>🌐</span> Sign up with Google
@@ -670,7 +698,10 @@
                     
                     <div class="form-group">
                         <label for="encryptPin">Encryption PIN:</label>
-                        <input type="password" id="encryptPin" name="pin" placeholder="Enter secure PIN" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="encryptPin" name="pin" placeholder="Enter secure PIN" required>
+                            <span class="password-toggle" onclick="togglePassword('encryptPin', this)">👁️</span>
+                        </div>
                         <div class="pin-strength" id="pinStrength" style="display:none;"></div>
                     </div>
                     
@@ -700,7 +731,10 @@
                     
                     <div class="form-group">
                         <label for="decryptPin">Decryption PIN:</label>
-                        <input type="password" id="decryptPin" name="pin" placeholder="Enter PIN" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="decryptPin" name="pin" placeholder="Enter PIN" required>
+                            <span class="password-toggle" onclick="togglePassword('decryptPin', this)">👁️</span>
+                        </div>
                     </div>
                     
                     <button type="submit" class="btn btn-secondary" style="width: 100%;">
@@ -759,7 +793,10 @@
                 </div>
                 <div class="form-group">
                     <label for="logPassword">Password:</label>
-                    <input type="password" id="logPassword" required>
+                    <div class="password-wrapper">
+                        <input type="password" id="logPassword" required>
+                        <span class="password-toggle" onclick="togglePassword('logPassword', this)">👁️</span>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
             </form>
@@ -1153,6 +1190,18 @@
         }
 
         new AuthManager();
+
+        // Password toggle function
+        window.togglePassword = function(inputId, toggleIcon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggleIcon.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                toggleIcon.textContent = '👁️';
+            }
+        };
     </script>
 </body>
 </html>
