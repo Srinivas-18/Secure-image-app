@@ -49,8 +49,8 @@
 ## 🚀 Demo
 
 ### Live Deployment
-- **Frontend**: Deployed on [Vercel](https://vercel.com) *(Add your URL)*
-- **Backend**: Hosted on [Render](https://render.com) *(Add your URL)*
+- **Frontend**: Deployed on [Vercel](https://image-encryption1.vercel.app/)
+- **Backend**: Hosted on [Render](https://secure-image-encryption-api.onrender.com/)
 
 ### Screenshots
 
